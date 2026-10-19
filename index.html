@@ -3,19 +3,281 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aura Clicker</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Aura Clicker Evolution</title>
+    <style>
+        /* Estilo Geral */
+        body {
+            background-color: #0b0b16;
+            color: #ffffff;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* Container Principal */
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+            max-width: 500px;
+            background-color: #13132b;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(138, 43, 226, 0.3);
+            text-align: center;
+        }
+
+        h1 {
+            color: #bc13fe;
+            margin: 0;
+            text-shadow: 0 0 10px rgba(188, 19, 254, 0.5);
+        }
+
+        /* Seção do Contador */
+        .status-section {
+            background-color: #1c1c3a;
+            padding: 15px;
+            border-radius: 12px;
+        }
+
+        #aura-contador {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #00ffff;
+            display: block;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
+        }
+
+        .stats-secundarios {
+            font-size: 0.9rem;
+            color: #a0a0c0;
+            margin-top: 5px;
+        }
+
+        /* Botão Principal de Clique */
+        #btn-farmar {
+            background: linear-gradient(135deg, #8a2be2, #bc13fe);
+            color: white;
+            border: none;
+            padding: 20px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(138, 43, 226, 0.4);
+            transition: transform 0.05s, filter 0.2s;
+        }
+
+        #btn-farmar:hover {
+            filter: brightness(1.2);
+        }
+
+        #btn-farmar:active {
+            transform: scale(0.96);
+        }
+
+        /* Seção da Loja */
+        .loja-container {
+            text-align: left;
+            margin-top: 10px;
+        }
+
+        .loja-titulo {
+            font-size: 1.2rem;
+            color: #00ffff;
+            border-bottom: 2px solid #1c1c3a;
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+        }
+
+        /* Itens da Loja */
+        .item-loja {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #1c1c3a;
+            padding: 12px 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #2d2d5a;
+        }
+
+        .item-info p {
+            margin: 0;
+        }
+
+        .item-nome {
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .item-efeito {
+            font-size: 0.85rem;
+            color: #a0a0c0;
+        }
+
+        .btn-comprar {
+            background-color: #00b3b3;
+            color: #000;
+            border: none;
+            padding: 8px 15px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s, opacity 0.2s;
+        }
+
+        .btn-comprar:hover {
+            background-color: #00ffff;
+        }
+
+        /* Estilo para quando o jogador não tem aura suficiente */
+        .btn-comprar:disabled {
+            background-color: #33334c;
+            color: #777799;
+            cursor: not-allowed;
+        }
+    </style>
 </head>
 <body>
 
     <div class="game-container">
-        <h1>✨ Aura Clicker ✨</h1>
-        <p>Sua Aura atual: <span id="aura-contador">0</span></p>
+        <h1>✨ Aura Clicker Evolution ✨</h1>
         
-        <!-- Botão principal para farmar -->
-        <button id="btn-farmar">Farmar Aura (+1)</button>
+        <div class="status-section">
+            <span id="aura-contador">0</span>
+            <div class="stats-secundarios">
+                Aura por Clique: +<span id="txt-por-clique">1</span> | 
+                Aura por Segundo: +<span id="txt-por-segundo">0</span>
+            </div>
+        </div>
+        
+        <!-- Botão de Farm Principal -->
+        <button id="btn-farmar">CONCENTRAR AURA</button>
+
+        <!-- Seção da Loja -->
+        <div class="loja-container">
+            <div class="loja-titulo">🛒 Loja de Upgrades</div>
+            
+            <!-- Upgrade 1: Multiplicador de Clique -->
+            <div class="item-loja">
+                <div class="item-info">
+                    <p class="item-nome">Foco Espiritual (<span id="lvl-upgrade-clique">0</span>)</p>
+                    <p class="item-efeito">+1 Aura por clique</p>
+                </div>
+                <button class="btn-comprar" id="btn-upgrade-clique">Custo: 15</button>
+            </div>
+
+            <!-- Upgrade 2: Gerador Automático -->
+            <div class="item-loja">
+                <div class="item-info">
+                    <p class="item-nome">Meditação Passiva (<span id="lvl-auto-click">0</span>)</p>
+                    <p class="item-efeito">+2 Aura por segundo</p>
+                </div>
+                <button class="btn-comprar" id="btn-auto-click">Custo: 50</button>
+            </div>
+        </div>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        // --- 1. ESTADO DO JOGO (VARIÁVEIS) ---
+        let aura = 0;
+        let auraPorClique = 1;
+        let auraPorSegundo = 0;
+
+        // Preços iniciais dos upgrades
+        let custoUpgradeClique = 15;
+        let custoAutoClick = 50;
+
+        // Níveis dos upgrades
+        let lvlUpgradeClique = 0;
+        let lvlAutoClick = 0;
+
+        // --- 2. MAPEAMENTO DOS ELEMENTOS DO HTML ---
+        const txtAura = document.getElementById("aura-contador");
+        const txtPorClique = document.getElementById("txt-por-clique");
+        const txtPorSegundo = document.getElementById("txt-por-segundo");
+        const btnFarmar = document.getElementById("btn-farmar");
+
+        const btnUpgradeClique = document.getElementById("btn-upgrade-clique");
+        const btnAutoClick = document.getElementById("btn-auto-click");
+
+        const txtLvlClique = document.getElementById("lvl-upgrade-clique");
+        const txtLvlAuto = document.getElementById("lvl-auto-click");
+
+        // --- 3. FUNÇÕES DE ATUALIZAÇÃO ---
+        
+        // Atualiza todos os textos e desabilita botões se faltar dinheiro
+        function atualizarInterface() {
+            txtAura.innerText = Math.floor(aura);
+            txtPorClique.innerText = auraPorClique;
+            txtPorSegundo.innerText = auraPorSegundo;
+
+            // Atualiza os textos dos botões da loja
+            btnUpgradeClique.innerText = "Custo: " + custoUpgradeClique;
+            btnAutoClick.innerText = "Custo: " + custoAutoClick;
+
+            // Mostra os níveis atuais
+            txtLvlClique.innerText = lvlUpgradeClique;
+            txtLvlAuto.innerText = lvlAutoClick;
+
+            // Validação de botões: Bloqueia se o jogador não puder pagar
+            btnUpgradeClique.disabled = (aura < custoUpgradeClique);
+            btnAutoClick.disabled = (aura < custoAutoClick);
+        }
+
+        // --- 4. SISTEMA DE CLIQUE ---
+        btnFarmar.addEventListener("click", () => {
+            aura += auraPorClique;
+            atualizarInterface();
+        });
+
+        // --- 5. LOGICA DA LOJA (COMPRAS) ---
+
+        // Comprar multiplicador de clique (+1 por clique)
+        btnUpgradeClique.addEventListener("click", () => {
+            if (aura >= custoUpgradeClique) {
+                aura -= custoUpgradeClique; // Gasta a aura
+                auraPorClique += 1;          // Aumenta o poder do clique
+                lvlUpgradeClique += 1;       // Aumenta o nível exibido
+                
+                // Aumenta o preço do próximo upgrade em 50% (inflação)
+                custoUpgradeClique = Math.round(custoUpgradeClique * 1.5); 
+                
+                atualizarInterface();
+            }
+        });
+
+        // Comprar gerador automático (+2 aura por segundo)
+        btnAutoClick.addEventListener("click", () => {
+            if (aura >= custoAutoClick) {
+                aura -= custoAutoClick;
+                auraPorSegundo += 2;
+                lvlAutoClick += 1;
+
+                // Aumenta o preço do próximo gerador automático em 60%
+                custoAutoClick = Math.round(custoAutoClick * 1.6);
+
+                atualizarInterface();
+            }
+        });
+
+        // --- 6. LOOP DO AUTO-CLICKER (EXECUTA A CADA 1 SEGUNDO) ---
+        setInterval(() => {
+            if (auraPorSegundo > 0) {
+                aura += auraPorSegundo;
+                atualizarInterface();
+            }
+        }, 1000); // 1000 milissegundos = 1 segundo
+
+        // Inicializa a tela com os valores corretos ao abrir o jogo
+        atualizarInterface();
+    </script>
 </body>
 </html>
