@@ -19,14 +19,14 @@ const Modificadores = {
 let el = {}, clickArea, cometaBonus, powerupLayer;
 let audioCtx = null;
 
-// Executa com segurança máxima após carregar a árvore HTML
+// Executa após carregar a árvore HTML com total segurança
 window.addEventListener("DOMContentLoaded", () => {
     mapearElementos();
     carregarJogo();
     configurarEventos();
     mudarSkin(Game.skinAtiva);
     
-    // Loops Paralelos do Jogo
+    // Loops Paralelos do Motor do Jogo
     setInterval(executarGanhoPassivo, 100);
     setInterval(salvarJogo, 5000);
     setInterval(gerenciarSpawnCometa, 14000);
@@ -185,18 +185,16 @@ function gerenciarSpawnPowerUp() {
         });
 
         powerupLayer.appendChild(drop);
-        setTimeout(() => { if(drop) drop.remove(); }, 8000);
+        setTimeout(() => { if(drop && drop.parentNode) drop.remove(); }, 8000);
     }
 }
 
 function activarPowerUp(tipo) {
     if (tipo === 'clique') {
         Modificadores.multiplicadorClique = 2;
-        alert("⚡ FRENESI CÓSMICO ATIVADO! Ganhos por clique dobrados por 10 segundos!");
         setTimeout(() => { Modificadores.multiplicadorClique = 1; atualizarTela(); }, 10000);
     } else {
         Modificadores.multiplicadorPassivo = 2;
-        alert("🌀 DOBRA TEMPORAL ATIVADA! Produção passiva dobrada por 10 segundos!");
         setTimeout(() => { Modificadores.multiplicadorPassivo = 1; atualizarTela(); }, 10000);
     }
     atualizarTela();
@@ -240,8 +238,8 @@ function dispararClique(e) {
         const p = document.createElement("div"); p.classList.add("particle");
         p.innerText = "+" + total + (eCrit ? " ⚡ CRIT!" : "");
         if (eCrit) p.style.color = "var(--accent)";
-const rect = clickArea.getBoundingClientRect();
-p.style.left = (e.clientX ? (e.clientX - rect.left) : (rect.width/2)) + "px";
+        const rect = clickArea.getBoundingClientRect();
+        p.style.left = (e.clientX ? (e.clientX - rect.left) : (rect.width/2)) + "px";
 p.style.top = (e.clientY ? (e.clientY - rect.top) : (rect.height/2)) + "px";
 clickArea.appendChild(p); setTimeout(() => p.remove(), 600);
 }
@@ -284,7 +282,6 @@ el.resGacha.style.color = "#ffaa00";
 }
 atualizarTela();
 }
-// Ouvintes avançados via JavaScript (Removeu dependência do HTML)
 function abrirAba(nomeAba) {
 document.querySelectorAll('.conteudo-aba').forEach(a => a.classList.remove('ativa'));
 document.querySelectorAll('.aba-btn').forEach(b => b.classList.remove('ativa'));
@@ -308,7 +305,6 @@ el.h1.addEventListener("click", () => comprarDivindade('h1', 1));
 el.h2.addEventListener("click", () => comprarDivindade('h2', 2));
 el.btnRebirth.addEventListener("click", efetuarRebirth);
 document.getElementById("btn-reset").addEventListener("click", resetTudo);
-// ESCUTADORES DA NAVEGAÇÃO DE ABAS
 document.querySelectorAll(".aba-btn").forEach(botao => {
 botao.addEventListener("click", (e) => {
 const abaAlvo = e.target.getAttribute("data-aba");
@@ -316,7 +312,6 @@ abrirAba(abaAlvo);
 e.target.classList.add("ativa");
 });
 });
-// ESCUTADORES DE CUSTOMIZAÇÃO DE SKIN
 document.querySelectorAll(".skin-btn").forEach(botao => {
 botao.addEventListener("click", (e) => {
 const skinAlvo = e.target.getAttribute("data-skin");
@@ -358,4 +353,4 @@ const s = localStorage.getItem("auraGodSave_v5");
 if (s) { Object.assign(Game, JSON.parse(s)); }
 } catch(e){}
 }
-function resetTudo() { if(confirm("Deletar todos os deuses e registros?")) { localStorage.removeItem("auraGodSave_v5"); location.reload(); } }
+function resetTudo() { if(confirm("Deletar todos os registros e saves?")) { localStorage.removeItem("auraGodSave_v5"); location.reload(); } }
