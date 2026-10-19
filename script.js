@@ -19,7 +19,7 @@ const Modificadores = {
 let el = {}, clickArea, cometaBonus, powerupLayer;
 let audioCtx = null;
 
-// Executa após carregar a árvore HTML com total segurança
+// Inicialização segura atada ao carregamento completo do DOM
 window.addEventListener("DOMContentLoaded", () => {
     mapearElementos();
     carregarJogo();
