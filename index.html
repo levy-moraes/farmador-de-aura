@@ -42,18 +42,18 @@
 
             <div class="secao-titulo">🧬 Customização de Aura (Skin)</div>
             <div class="skin-selector">
-                <button class="skin-btn ativo" onclick="mudarSkin('cyber', event)">Cyber Ciano</button>
-                <button class="skin-btn" onclick="mudarSkin('inferno', event)">Inferno Neon</button>
-                <button class="skin-btn" onclick="mudarSkin('void', event)">Vazio Absoluto</button>
+                <button class="skin-btn ativo" data-skin="cyber">Cyber Ciano</button>
+                <button class="skin-btn" data-skin="inferno">Inferno Neon</button>
+                <button class="skin-btn" data-skin="void">Vazio Absoluto</button>
             </div>
         </div>
 
         <!-- COLUNA DIREITA: ABAS E UPGRADES -->
         <div class="panel-right">
             <div class="abas-navegacao">
-                <button class="aba-btn ativa" onclick="abrirAba('loja', event)">🛒 Mercado</button>
-                <button class="aba-btn" onclick="abrirAba('arvore', event)">✨ Divindade</button>
-                <button class="aba-btn" onclick="abrirAba('cassino', event)">🎲 Gacha</button>
+                <button class="aba-btn ativa" data-aba="loja">🛒 Mercado</button>
+                <button class="aba-btn" data-aba="arvore">✨ Divindade</button>
+                <button class="aba-btn" data-aba="cassino">🎲 Gacha</button>
             </div>
 
             <!-- ABA MERCADO -->

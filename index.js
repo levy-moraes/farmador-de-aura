@@ -9,7 +9,6 @@ const Game = {
     skinAtiva: 'cyber'
 };
 
-// Modificadores de buffs temporários
 const Modificadores = {
     multiplicadorClique: 1,
     multiplicadorPassivo: 1,
@@ -17,68 +16,58 @@ const Modificadores = {
     eventoTexto: 'Universo em Calmaria'
 };
 
-let el, clickArea, cometaBonus, powerupLayer;
+let el = {}, clickArea, cometaBonus, powerupLayer;
 let audioCtx = null;
 
-function iniciarJogo() {
+// Executa com segurança máxima após carregar a árvore HTML
+window.addEventListener("DOMContentLoaded", () => {
     mapearElementos();
     carregarJogo();
     configurarEventos();
-    mudarSkin(Game.skinAtiva, null);
+    mudarSkin(Game.skinAtiva);
     
-    // Loops Paralelos do Motor do Jogo
+    // Loops Paralelos do Jogo
     setInterval(executarGanhoPassivo, 100);
     setInterval(salvarJogo, 5000);
     setInterval(gerenciarSpawnCometa, 14000);
-    setInterval(gerenciarSpawnPowerUp, 20000);     // Cristais surgem a cada 20 segundos
-    setInterval(gerenciarEventosAleatorios, 45000); // Climas cósmicos alteram a cada 45 segundos
+    setInterval(gerenciarSpawnPowerUp, 20000);
+    setInterval(gerenciarEventosAleatorios, 45000);
     
     atualizarTela();
-}
-
-if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", iniciarJogo);
-} else {
-    iniciarJogo();
-}
+});
 
 function mapearElementos() {
     clickArea = document.getElementById("area-de-clique");
     cometaBonus = document.getElementById("cometa-bonus");
     powerupLayer = document.getElementById("powerup-layer");
-    el = {
-        contador: document.getElementById("aura-contador"),
-        txtFragmentos: document.getElementById("txt-fragmentos"),
-        raridade: document.getElementById("txt-raridade"),
-        valClique: document.getElementById("val-clique"),
-        valPassivo: document.getElementById("val-passivo"),
-        valCrit: document.getElementById("val-crit"),
-        valBonusGod: document.getElementById("val-bonus-god"),
-        lblRebirth: document.getElementById("lbl-rebirth"),
-        btnRebirth: document.getElementById("btn-rebirth"),
-        barraRebirth: document.getElementById("barra-progresso-rebirth"),
-        painelEvento: document.getElementById("painel-evento"),
-        
-        u1: document.getElementById("btn-u1"),
-        u2: document.getElementById("btn-u2"),
-        u3: document.getElementById("btn-u3"),
-        lvl1: document.getElementById("lvl-u1"),
-        lvl2: document.getElementById("lvl-u2"),
-        box3: document.getElementById("box-u3"),
-        nome3: document.getElementById("nome-u3"),
-        efeito3: document.getElementById("efeito-u3"),
-        
-        h1: document.getElementById("btn-h1"),
-        h2: document.getElementById("btn-h2"),
-        lvlH1: document.getElementById("lvl-h1"),
-        lvlH2: document.getElementById("lvl-h2"),
-        
-        btnRoleta: document.getElementById("btn-roletar"),
-        resGacha: document.getElementById("gacha-resultado")
-    };
+    
+    el.contador = document.getElementById("aura-contador");
+    el.txtFragmentos = document.getElementById("txt-fragmentos");
+    el.raridade = document.getElementById("txt-raridade");
+    el.valClique = document.getElementById("val-clique");
+    el.valPassivo = document.getElementById("val-passivo");
+    el.valCrit = document.getElementById("val-crit");
+    el.valBonusGod = document.getElementById("val-bonus-god");
+    el.lblRebirth = document.getElementById("lbl-rebirth");
+    el.btnRebirth = document.getElementById("btn-rebirth");
+    el.barraRebirth = document.getElementById("barra-progresso-rebirth");
+    el.painelEvento = document.getElementById("painel-evento");
+    el.u1 = document.getElementById("btn-u1");
+    el.u2 = document.getElementById("btn-u2");
+    el.u3 = document.getElementById("btn-u3");
+    el.lvl1 = document.getElementById("lvl-u1");
+    el.lvl2 = document.getElementById("lvl-u2");
+    el.box3 = document.getElementById("box-u3");
+    el.nome3 = document.getElementById("nome-u3");
+    el.efeito3 = document.getElementById("efeito-u3");
+    el.h1 = document.getElementById("btn-h1");
+    el.h2 = document.getElementById("btn-h2");
+    el.lvlH1 = document.getElementById("lvl-h1");
+    el.lvlH2 = document.getElementById("lvl-h2");
+    el.btnRoleta = document.getElementById("btn-roletar");
+    el.resGacha = document.getElementById("gacha-resultado");
 }
 
-// --- SINTETIZADOR DE ÁUDIO NATIVO ---
 function tocarSom(freq, tipo, duracao) {
     try {
         if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -92,7 +81,6 @@ function tocarSom(freq, tipo, duracao) {
     } catch(e){}
 }
 
-// --- MATEMÁTICA DE ESCALONAMENTO ---
 function obterSorteCritica() { 
     let baseCrit = 0.10 + (Game.divindade.h1 * 0.05); 
     if (Modificadores.eventoAtual === 'tempestade') baseCrit += 0.25;
@@ -123,7 +111,6 @@ function atualizarRaridadeETexto(poderClique) {
     else el.raridade.innerText = "ENTIDADE SUPREMA (DEUS)";
 }
 
-// --- RENDERIZADOR GLOBAL ---
 function atualizarTela() {
     if (!el || !el.contador) return;
 
@@ -154,7 +141,6 @@ function atualizarTela() {
 
     atualizarRaridadeETexto(clique);
 
-    // Botões Loja
     el.u1.innerText = "Custo: " + Game.custos.u1; el.u1.disabled = (Game.aura < Game.custos.u1);
     el.u2.innerText = "Custo: " + Game.custos.u2; el.u2.disabled = (Game.aura < Game.custos.u2);
     el.lvl1.innerText = Game.upgrades.u1; el.lvl2.innerText = Game.upgrades.u2;
@@ -174,7 +160,6 @@ function atualizarTela() {
     el.btnRebirth.disabled = (Game.aura < Game.custos.rebirth);
 }
 
-// --- CONTROLE DE CRISTAIS FLUTUANTES ---
 function gerenciarSpawnPowerUp() {
     if (!powerupLayer) return;
     if (Math.random() < 0.5) {
@@ -200,14 +185,14 @@ function gerenciarSpawnPowerUp() {
         });
 
         powerupLayer.appendChild(drop);
-        setTimeout(() => { drop.remove(); }, 8000);
+        setTimeout(() => { if(drop) drop.remove(); }, 8000);
     }
 }
 
 function activarPowerUp(tipo) {
     if (tipo === 'clique') {
         Modificadores.multiplicadorClique = 2;
-        alert("⚡ FRENESI CÓSMICO ATIVADO! Cliques dobram de bônus por 10 segundos!");
+        alert("⚡ FRENESI CÓSMICO ATIVADO! Ganhos por clique dobrados por 10 segundos!");
         setTimeout(() => { Modificadores.multiplicadorClique = 1; atualizarTela(); }, 10000);
     } else {
         Modificadores.multiplicadorPassivo = 2;
@@ -217,7 +202,6 @@ function activarPowerUp(tipo) {
     atualizarTela();
 }
 
-// --- CLIMAS CÓSMICOS GLOBAIS ---
 function gerenciarEventosAleatorios() {
     const sorteio = Math.random();
     if (sorteio < 0.33) {
@@ -244,17 +228,18 @@ function gerenciarEventosAleatorios() {
     }, 15000);
 }
 
-// --- CLIQUES E ANIMAÇÕES ---
 function dispararClique(e) {
-const base = calcularValorFinalClique();
-const eCrit = Math.random() < obterSorteCritica();
-const total = eCrit ? base * 3 : base;
-Game.aura += total;
-tavorSom = tocarSom(eCrit ? 880 : 440, 'triangle', 0.08);
-if (clickArea) {
-const p = document.createElement("div"); p.classList.add("particle");
-p.innerText = "+" + total + (eCrit ? " ⚡ CRIT!" : "");
-if (eCrit) p.style.color = "var(--accent)";
+    const base = calcularValorFinalClique();
+    const eCrit = Math.random() < obterSorteCritica();
+    const total = eCrit ? base * 3 : base;
+
+    Game.aura += total;
+    tocarSom(eCrit ? 880 : 440, 'triangle', 0.08);
+
+    if (clickArea) {
+        const p = document.createElement("div"); p.classList.add("particle");
+        p.innerText = "+" + total + (eCrit ? " ⚡ CRIT!" : "");
+        if (eCrit) p.style.color = "var(--accent)";
 const rect = clickArea.getBoundingClientRect();
 p.style.left = (e.clientX ? (e.clientX - rect.left) : (rect.width/2)) + "px";
 p.style.top = (e.clientY ? (e.clientY - rect.top) : (rect.height/2)) + "px";
@@ -268,7 +253,7 @@ if (Math.random() < 0.5) {
 cometaBonus.style.left = Math.floor(Math.random() * (window.innerWidth - 200)) + "px";
 cometaBonus.style.top = Math.floor(Math.random() * (window.innerHeight - 100)) + "px";
 cometaBonus.classList.remove("cometa-escondido");
-setTimeout(() => cometaBonus.classList.add("cometa-escondido"), 5000);
+setTimeout(() => { if(cometaBonus) cometaBonus.classList.add("cometa-escondido"); }, 5000);
 }
 }
 function coletarCometa() {
@@ -279,7 +264,6 @@ Game.aura += recompensa;
 el.resGacha.innerText = "☄️ Fenda Coletada! Concedeu +" + recompensa + " Auras!";
 atualizarTela();
 }
-// --- GACHA CASSINO ---
 function jogarCassino() {
 if (Game.aura < 200) return;
 Game.aura -= 200;
@@ -300,20 +284,18 @@ el.resGacha.style.color = "#ffaa00";
 }
 atualizarTela();
 }
-// --- INTERFACES, SKINS E COMPRAS ---
-function abrirAba(nomeAba, evento) {
+// Ouvintes avançados via JavaScript (Removeu dependência do HTML)
+function abrirAba(nomeAba) {
 document.querySelectorAll('.conteudo-aba').forEach(a => a.classList.remove('ativa'));
 document.querySelectorAll('.aba-btn').forEach(b => b.classList.remove('ativa'));
 const abaAlvo = document.getElementById("aba-" + nomeAba);
 if (abaAlvo) abaAlvo.classList.add('ativa');
-if (evento && evento.currentTarget) evento.currentTarget.classList.add('ativa');
 }
-function mudarSkin(id, evento) {
+function mudarSkin(id) {
 document.body.className = "";
 if (id !== 'cyber') document.body.classList.add("theme-" + id);
 Game.skinAtiva = id;
 document.querySelectorAll('.skin-btn').forEach(b => b.classList.remove('ativo'));
-if (evento && evento.currentTarget) evento.currentTarget.classList.add('ativo');
 }
 function configurarEventos() {
 document.getElementById("btn-farmar").addEventListener("click", dispararClique);
@@ -325,7 +307,23 @@ el.u3.addEventListener("click", () => comprarItem('u3', 1.6));
 el.h1.addEventListener("click", () => comprarDivindade('h1', 1));
 el.h2.addEventListener("click", () => comprarDivindade('h2', 2));
 el.btnRebirth.addEventListener("click", efetuarRebirth);
-document.querySelector(".btn-acao-perfil").addEventListener("click", resetTudo);
+document.getElementById("btn-reset").addEventListener("click", resetTudo);
+// ESCUTADORES DA NAVEGAÇÃO DE ABAS
+document.querySelectorAll(".aba-btn").forEach(botao => {
+botao.addEventListener("click", (e) => {
+const abaAlvo = e.target.getAttribute("data-aba");
+abrirAba(abaAlvo);
+e.target.classList.add("ativa");
+});
+});
+// ESCUTADORES DE CUSTOMIZAÇÃO DE SKIN
+document.querySelectorAll(".skin-btn").forEach(botao => {
+botao.addEventListener("click", (e) => {
+const skinAlvo = e.target.getAttribute("data-skin");
+mudarSkin(skinAlvo);
+e.target.classList.add("ativo");
+});
+});
 }
 function comprarItem(id, inflacao) {
 if (Game.aura >= Game.custos[id]) {
@@ -360,4 +358,4 @@ const s = localStorage.getItem("auraGodSave_v5");
 if (s) { Object.assign(Game, JSON.parse(s)); }
 } catch(e){}
 }
-function resetTudo() { if(confirm("Deletar todos os registros?")) { localStorage.removeItem("auraGodSave_v5"); location.reload(); } }
+function resetTudo() { if(confirm("Deletar todos os deuses e registros?")) { localStorage.removeItem("auraGodSave_v5"); location.reload(); } }
