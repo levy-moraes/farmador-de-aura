@@ -3,105 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aura Tycoon: Cosmic Clicker</title>
+    <title>Aura Tycoon: God Mode</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div class="nebulosa-fundo"></div>
+    <div id="cometa-bonus" class="cometa-escondido">☄️ ANOMALIA QUANTICA! CLIQUE! ☄️</div>
 
-    <div class="game-wrapper">
-        <!-- PAINEL CENTRAL DO JOGO -->
-        <div class="main-panel">
-            <h1>🌌 Aura Tycoon v2.0</h1>
+    <div class="game-layout">
+        <!-- COLUNA ESQUERDA: EXIBIÇÃO E BOTÃO PRINCIPAL -->
+        <div class="panel-left">
+            <div class="header-game">
+                <h1>🌌 Aura Tycoon</h1>
+                <span class="versao-tag">GOD MODE v4.0</span>
+            </div>
 
             <div class="aura-display">
                 <div id="aura-contador">0</div>
-                <div class="aura-raridade" id="txt-raridade">Aura Fluida (Comum)</div>
+                <div class="aura-raridade" id="txt-raridade">Aura Primordial</div>
+                <div class="moeda-secundaria">🔮 Fragmentos Divinos: <span id="txt-fragmentos">0</span></div>
                 
                 <div class="stats-grid">
-                    <div>Poder do Clique: <span id="val-clique">+1</span></div>
-                    <div>Ganhos Passivos: <span id="val-passivo">+0/s</span></div>
-                    <div>Sorte Crítica: <span id="val-crit">5%</span></div>
-                    <div>Bônus Conquistas: <span id="val-bonus-conq">1.0x</span></div>
+                    <div>Clique Final: <span id="val-clique">+1</span></div>
+                    <div>Passivo FInal: <span id="val-passivo">+0/s</span></div>
+                    <div>Sorte Crítica: <span id="val-crit">10%</span></div>
+                    <div>Bônus Divino: <span id="val-bonus-god">1.0x</span></div>
                 </div>
             </div>
 
             <div class="click-area" id="area-de-clique">
-                <button id="btn-farmar">Concentrar Energia Cósmica</button>
+                <button id="btn-farmar">Concentrar Poder Divino</button>
             </div>
 
-            <div class="secao-titulo">🌌 Altar de Renascimento</div>
-            <div class="item-loja" style="background: rgba(188, 19, 254, 0.05); border-color: #bc13fe;">
-                <div class="item-info">
-                    <p class="info-nome">Ascensão de Alma (Rebirths: <span id="lbl-rebirth">0</span>)</p>
-                    <p class="info-efeito">Reseta estruturas por bônus global e novos patamares.</p>
-                </div>
-                <button class="btn-comprar btn-rebirth-premium" id="btn-rebirth">Meta: 1k</button>
+            <div class="secao-titulo">🧬 Customização de Aura (Skin)</div>
+            <div class="skin-selector">
+                <button class="skin-btn ativo" onclick="mudarSkin('cyber')">Cyber Ciano</button>
+                <button class="skin-btn" onclick="mudarSkin('inferno')">Inferno Neon</button>
+                <button class="skin-btn" onclick="mudarSkin('void')">Vazio Absoluto</button>
             </div>
         </div>
 
-        <!-- PAINEL LATERAL (LOJA E CONQUISTAS) -->
-        <div class="side-panel">
-            <div class="secao-titulo">🛒 Mercado de Upgrades</div>
-            <div class="loja-scroll">
+        <!-- COLUNA DIREITA: UPGRADES, ÁRVORE E CASSINO -->
+        <div class="panel-right">
+            <div class="abas-navegacao">
+                <button class="aba-btn ativa" onclick="abrirAba('loja')">🛒 Mercado</button>
+                <button class="aba-btn" onclick="abrirAba('arvore')">✨ Divindade</button>
+                <button class="aba-btn" onclick="abrirAba('cassino')">🎲 Gacha</button>
+            </div>
+
+            <!-- CONTEÚDO: LOJA -->
+            <div id="aba-loja" class="conteudo-aba ativa">
+                <div class="secao-titulo">🛒 Upgrades Padrão</div>
                 <div class="item-loja">
-                    <div class="item-info">
-                        <p class="info-nome">Foco Mental (<span id="lvl-u1">0</span>)</p>
-                        <p class="info-efeito">+1 por clique manual</p>
-                    </div>
+                    <div class="item-info"><p class="info-nome">Foco Mental (<span id="lvl-u1">0</span>)</p><p class="info-efeito">+1 por clique</p></div>
                     <button class="btn-comprar" id="btn-u1">Custo: 15</button>
                 </div>
-
                 <div class="item-loja">
-                    <div class="item-info">
-                        <p class="info-nome">Núcleo de Meditação (<span id="lvl-u2">0</span>)</p>
-                        <p class="info-efeito">+2 por segundo passivo</p>
-                    </div>
+                    <div class="item-info"><p class="info-nome">Núcleo de Meditação (<span id="lvl-u2">0</span>)</p><p class="info-efeito">+2/s passivo</p></div>
                     <button class="btn-comprar" id="btn-u2">Custo: 60</button>
                 </div>
-
                 <div class="item-loja" id="box-u3">
-                    <div class="item-info">
-                        <p class="info-nome" id="nome-u3">🔒 Bloqueado (Rebirth 1)</p>
-                        <p class="info-efeito" id="efeito-u3">Desbloqueia ao renascer</p>
-                    </div>
+                    <div class="item-info"><p class="info-nome" id="nome-u3">🔒 Rebirth 1</p><p class="info-efeito" id="efeito-u3">Sintonia Astral</p></div>
                     <button class="btn-comprar" id="btn-u3" disabled>Custo: 400</button>
                 </div>
 
-                <div class="item-loja" id="box-u4">
-                    <div class="item-info">
-                        <p class="info-nome" id="nome-u4">🔒 Bloqueado (Rebirth 2)</p>
-                        <p class="info-efeito" id="efeito-u4">Requer maior transcendência</p>
-                    </div>
-                    <button class="btn-comprar" id="btn-u4" disabled>Custo: 2.5k</button>
+                <div class="secao-titulo">🌌 Altar de Renascimento</div>
+                <div class="rebirth-card-container">
+                    <p class="info-efeito">Ganha +100% de bônus global e +1 Fragmento Divino por meta batida.</p>
+                    <div class="progress-bar-container"><div class="progress-bar-fill" id="barra-progresso-rebirth"></div></div>
+                    <button class="btn-comprar btn-rebirth-premium" id="btn-rebirth">Meta: 1k</button>
                 </div>
             </div>
 
-            <div class="secao-titulo">🏆 Salão de Conquistas</div>
-            <div class="conquistas-grid">
-                <div class="conquista-card" id="ach-1">
-                    <div>
-                        <p class="conquista-nome">Despertar Espiritual</p>
-                        <p class="conquista-desc">500 Auras históricas (+10% bônus)</p>
-                    </div>
-                    <span class="badge" id="badge-1">Bloqueado</span>
+            <!-- CONTEÚDO: ÁRVORE DE HABILIDADES DIVINAS -->
+            <div id="aba-arvore" class="conteudo-aba">
+                <div class="secao-titulo">✨ Transcendência Divina</div>
+                <p class="info-efeito" style="margin-bottom: 15px;">Use seus 🔮 Fragmentos Divinos obtidos em Rebirths de alto nível:</p>
+                
+                <div class="item-loja divindade">
+                    <div class="item-info"><p class="info-nome">Olho das Galáxias (<span id="lvl-h1">0</span>)</p><p class="info-efeito">+5% Sorte Crítica Global</p></div>
+                    <button class="btn-comprar btn-god" id="btn-h1">Custo: 1 🔮</button>
                 </div>
-                <div class="conquista-card" id="ach-2">
-                    <div>
-                        <p class="conquista-nome">Mestre do Clique</p>
-                        <p class="conquista-desc">15 níveis de Foco Mental (+10% bônus)</p>
-                    </div>
-                    <span class="badge" id="badge-2">Bloqueado</span>
-                </div>
-                <div class="conquista-card" id="ach-3">
-                    <div>
-                        <p class="conquista-nome">Transcendência Inicial</p>
-                        <p class="conquista-desc">Efetue o seu 1º Rebirth (+20% bônus)</p>
-                    </div>
-                    <span class="badge" id="badge-3">Bloqueado</span>
+                <div class="item-loja divindade">
+                    <div class="item-info"><p class="info-nome">Bênção Temporal (<span id="lvl-h2">0</span>)</p><p class="info-efeito">+25% de produção passiva geral</p></div>
+                    <button class="btn-comprar btn-god" id="btn-h2">Custo: 2 🔮</button>
                 </div>
             </div>
 
-            <button class="btn-acao-perfil" id="btn-reset">Apagar Todos os Dados Históricos</button>
+            <!-- CONTEÚDO: GACHA CASSINO -->
+            <div id="aba-cassino" class="conteudo-aba">
+                <div class="secao-titulo">🎲 Forja da Sorte Cósmica</div>
+                <div class="cassino-container">
+                    <p class="info-efeito">Gaste 200 Auras para girar a roleta dimensional. Você pode ganhar prêmios massivos ou perder tudo!</p>
+                    <button class="btn-comprar btn-gacha" id="btn-roletar">Girar Roleta (200 Auras)</button>
+                    <div id="gacha-resultado" class="resultado-box">Aguardando jogada...</div>
+                </div>
+            </div>
         </div>
     </div>
 
