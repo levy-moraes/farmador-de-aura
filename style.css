@@ -1,0 +1,47 @@
+body {
+    background-color: #0d0d1a;
+    color: #ffffff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.game-container {
+    text-align: center;
+    background-color: #1a1a3a;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(138, 43, 226, 0.5); /* Sombra Roxa estilo Aura */
+}
+
+h1 {
+    color: #bc13fe;
+}
+
+#aura-contador {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #00ffff;
+}
+
+#btn-farmar {
+    background-color: #8a2be2;
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    font-size: 1.2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.1s, background-color 0.2s;
+}
+
+#btn-farmar:hover {
+    background-color: #9932cc;
+}
+
+#btn-farmar:active {
+    transform: scale(0.95); /* Efeito de clique físico */
+}
