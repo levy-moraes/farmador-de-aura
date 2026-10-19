@@ -3,14 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aura Tycoon: Evolution God Mode</title>
+    <title>Aura Tycoon: God Mode Evolution</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="nebulosa-fundo"></div>
     <div id="cometa-bonus" class="cometa-escondido">☄️ ANOMALIA QUÂNTICA! CLIQUE! ☄️</div>
-
-    <!-- Camada para onde os cristais de Power-Up vão surgir -->
     <div id="powerup-layer"></div>
 
     <div class="game-layout">
@@ -18,7 +16,7 @@
         <div class="panel-left">
             <div class="header-game">
                 <h1>Aura Tycoon</h1>
-                <span class="versao-tag">EVOLUTION v5.0</span>
+                <span class="versao-tag">GOD MODE v5.5</span>
             </div>
 
             <div id="painel-evento" class="banner-evento">Universo em Calmaria...</div>
@@ -48,7 +46,7 @@
             </div>
         </div>
 
-        <!-- COLUNA DIREITA: ABAS E UPGRADES -->
+        <!-- COLUNA DIREITA: ABAS E PROGRESSÃO -->
         <div class="panel-right">
             <div class="abas-navegacao">
                 <button class="aba-btn ativa" data-aba="loja">🛒 Mercado</button>
@@ -68,13 +66,13 @@
                     <button class="btn-comprar" id="btn-u2">Custo: 60</button>
                 </div>
                 <div class="item-loja" id="box-u3">
-                    <div class="item-info"><p class="info-nome" id="nome-u3">🔒 Rebirth 1</p><p class="info-efeito" id="efeito-u3">Sintonia Astral</p></div>
+                    <div class="item-info"><p class="info-nome">Sintonia Astral (<span id="lvl-u3">0</span>)</p><p class="info-efeito" id="efeito-u3">🔒 Requer Rebirth 1</p></div>
                     <button class="btn-comprar" id="btn-u3" disabled>Custo: 400</button>
                 </div>
 
                 <div class="secao-titulo">🌌 Altar de Renascimento</div>
                 <div class="rebirth-card-container">
-                    <p class="info-efeito">Ganha bônus global e +1 Fragmento Divino por meta.</p>
+                    <p class="info-efeito">Reseta os Upgrades comuns por +100% de bônus global e +1 Fragmento Divino.</p>
                     <div class="progress-bar-container"><div class="progress-bar-fill" id="barra-progresso-rebirth"></div></div>
                     <button class="btn-comprar btn-rebirth-premium" id="btn-rebirth">Meta: 1k</button>
                 </div>
@@ -83,7 +81,7 @@
             <!-- ABA DIVINDADE -->
             <div id="aba-arvore" class="conteudo-aba">
                 <div class="secao-titulo">✨ Transcendência Divina</div>
-                <p class="info-efeito" style="margin-bottom: 15px;">Use seus 🔮 Fragmentos Divinos:</p>
+                <p class="info-efeito" style="margin-bottom: 15px;">Estes bônus são permanentes e não resetam no Rebirth:</p>
                 
                 <div class="item-loja divindade">
                     <div class="item-info"><p class="info-nome">Olho das Galáxias (<span id="lvl-h1">0</span>)</p><p class="info-efeito">+5% Sorte Crítica Global</p></div>
@@ -95,11 +93,23 @@
                 </div>
             </div>
 
-            <!-- ABA GACHA -->
+            <!-- ABA GACHA CINEMÁTICO -->
             <div id="aba-cassino" class="conteudo-aba">
                 <div class="secao-titulo">🎲 Forja da Sorte Cósmica</div>
                 <div class="cassino-container">
-                    <p class="info-efeito">Gaste 200 Auras para girar. Recompensa gigante ou falência!</p>
+                    <p class="info-efeito">Taxa de Vitória Reduzida. Gaste 200 Auras por uma tentativa.</p>
+                    
+                    <!-- Elemento Visual da Roleta Roletando -->
+                    <div class="roleta-wrapper">
+                        <div class="roleta-disco" id="roleta-visual">
+                            <div class="roleta-setor color-1"></div>
+                            <div class="roleta-setor color-2"></div>
+                            <div class="roleta-setor color-3"></div>
+                            <div class="roleta-setor color-4"></div>
+                        </div>
+                        <div class="roleta-ponteiro">▼</div>
+                    </div>
+
                     <button class="btn-comprar btn-gacha" id="btn-roletar">Girar Roleta (200 Auras)</button>
                     <div id="gacha-resultado" class="resultado-box">Aguardando jogada...</div>
                 </div>

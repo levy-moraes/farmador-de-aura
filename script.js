@@ -16,17 +16,17 @@ const Modificadores = {
     eventoTexto: 'Universo em Calmaria'
 };
 
-let el = {}, clickArea, cometaBonus, powerupLayer;
+let el = {}, clickArea, cometaBonus, powerupLayer, roletaVisual;
 let audioCtx = null;
 
-// Inicialização segura atada ao carregamento completo do DOM
+// Executa com segurança máxima após carregar a árvore HTML
 window.addEventListener("DOMContentLoaded", () => {
     mapearElementos();
     carregarJogo();
     configurarEventos();
     mudarSkin(Game.skinAtiva);
     
-    // Loops Paralelos do Motor do Jogo
+    // Loops de Tempo Paralelos
     setInterval(executarGanhoPassivo, 100);
     setInterval(salvarJogo, 5000);
     setInterval(gerenciarSpawnCometa, 14000);
@@ -40,6 +40,7 @@ function mapearElementos() {
     clickArea = document.getElementById("area-de-clique");
     cometaBonus = document.getElementById("cometa-bonus");
     powerupLayer = document.getElementById("powerup-layer");
+    roletaVisual = document.getElementById("roleta-visual");
     
     el.contador = document.getElementById("aura-contador");
     el.txtFragmentos = document.getElementById("txt-fragmentos");
@@ -52,18 +53,20 @@ function mapearElementos() {
     el.btnRebirth = document.getElementById("btn-rebirth");
     el.barraRebirth = document.getElementById("barra-progresso-rebirth");
     el.painelEvento = document.getElementById("painel-evento");
+    
     el.u1 = document.getElementById("btn-u1");
     el.u2 = document.getElementById("btn-u2");
     el.u3 = document.getElementById("btn-u3");
     el.lvl1 = document.getElementById("lvl-u1");
     el.lvl2 = document.getElementById("lvl-u2");
+    el.lvl3 = document.getElementById("lvl-u3");
     el.box3 = document.getElementById("box-u3");
-    el.nome3 = document.getElementById("nome-u3");
-    el.efeito3 = document.getElementById("efeito-u3");
+    
     el.h1 = document.getElementById("btn-h1");
     el.h2 = document.getElementById("btn-h2");
     el.lvlH1 = document.getElementById("lvl-h1");
     el.lvlH2 = document.getElementById("lvl-h2");
+    
     el.btnRoleta = document.getElementById("btn-roletar");
     el.resGacha = document.getElementById("gacha-resultado");
 }
@@ -135,97 +138,41 @@ function atualizarTela() {
     if (Modificadores.eventoAtual !== 'nenhum') {
         el.painelEvento.style.display = "block";
         el.painelEvento.innerText = Modificadores.eventoTexto;
-    } else {
-        el.painelEvento.style.display = "none";
-    }
+    } else { el.painelEvento.style.display = "none"; }
 
     atualizarRaridadeETexto(clique);
 
+    // Botões Loja Padrão
     el.u1.innerText = "Custo: " + Game.custos.u1; el.u1.disabled = (Game.aura < Game.custos.u1);
     el.u2.innerText = "Custo: " + Game.custos.u2; el.u2.disabled = (Game.aura < Game.custos.u2);
     el.lvl1.innerText = Game.upgrades.u1; el.lvl2.innerText = Game.upgrades.u2;
 
+    // Destravas do Rebirth 1+
     if (Game.rebirths >= 1) {
         el.box3.classList.remove("bloqueado");
-        el.nome3.innerHTML = "Sintonia Astral (<span id='lvl-u3'>" + Game.upgrades.u3 + "</span>)";
-        el.efeito3.innerText = "+25 por clique manual";
+        el.box3.querySelector(".info-nome").innerHTML = "Sintonia Astral (<span id='lvl-u3'>" + Game.upgrades.u3 + "</span>)";
+        el.box3.querySelector(".info-efeito").innerText = "+25 por clique manual";
         el.u3.innerText = "Custo: " + Game.custos.u3; el.u3.disabled = (Game.aura < Game.custos.u3);
-    } else { el.box3.classList.add("bloqueado"); el.nome3.innerText = "🔒 Rebirth 1 Necessário"; el.u3.disabled = true; }
+    } else {
+        el.box3.classList.add("bloqueado");
+        el.box3.querySelector(".info-nome").innerText = "🔒 Rebirth 1";
+        el.box3.querySelector(".info-efeito").innerText = "Sintonia Astral";
+        el.u3.innerText = "Bloqueado"; el.u3.disabled = true;
+    }
 
-    el.lvlH1.innerText = Game.divindade.h1; el.lvlH2.innerText = Game.divindade.h2;
-    el.h1.disabled = (Game.fragmentos < 1); el.h2.disabled = (Game.fragmentos < 2);
+    // CORREÇÃO DOS CONTADORES DE HABILIDADES DIVINAS
+    el.lvlH1.innerText = Game.divindade.h1;
+    el.lvlH2.innerText = Game.divindade.h2;
+    el.h1.disabled = (Game.fragmentos < 1);
+    el.h2.disabled = (Game.fragmentos < 2);
 
+    // Cassino e Rebirth
     el.btnRoleta.disabled = (Game.aura < 200);
     el.btnRebirth.innerText = "Meta: " + Game.custos.rebirth.toLocaleString();
     el.btnRebirth.disabled = (Game.aura < Game.custos.rebirth);
 }
 
-function gerenciarSpawnPowerUp() {
-    if (!powerupLayer) return;
-    if (Math.random() < 0.5) {
-        const drop = document.createElement("div");
-        drop.classList.add("powerup-drop");
-        
-        const tipoBuff = Math.random() < 0.5 ? 'clique' : 'passivo';
-        if (tipoBuff === 'clique') {
-            drop.innerText = "⚡ CRISTAL FRENESI (+2x Clique!)";
-            drop.style.background = "linear-gradient(135deg, #ff007f, #ffaa00)";
-        } else {
-            drop.innerText = "🌀 CRISTAL TEMPORAL (+2x Passivo!)";
-            drop.style.background = "linear-gradient(135deg, #00ffff, #00ff66)";
-        }
-
-        drop.style.left = Math.floor(Math.random() * (window.innerWidth - 250)) + "px";
-        drop.style.top = Math.floor(Math.random() * (window.innerHeight - 150)) + "px";
-        
-        drop.addEventListener("click", () => {
-            tocarSom(1000, 'sine', 0.3);
-            drop.remove();
-            ativarPowerUp(tipoBuff);
-        });
-
-        powerupLayer.appendChild(drop);
-        setTimeout(() => { if(drop && drop.parentNode) drop.remove(); }, 8000);
-    }
-}
-
-function activarPowerUp(tipo) {
-    if (tipo === 'clique') {
-        Modificadores.multiplicadorClique = 2;
-        setTimeout(() => { Modificadores.multiplicadorClique = 1; atualizarTela(); }, 10000);
-    } else {
-        Modificadores.multiplicadorPassivo = 2;
-        setTimeout(() => { Modificadores.multiplicadorPassivo = 1; atualizarTela(); }, 10000);
-    }
-    atualizarTela();
-}
-
-function gerenciarEventosAleatorios() {
-    const sorteio = Math.random();
-    if (sorteio < 0.33) {
-        Modificadores.eventoAtual = 'supernova';
-        Modificadores.eventoTexto = "💥 EVENTO: SUPERNOVA ATIVA! (Cliques Estão Dobrados!)";
-        el.painelEvento.style.background = "linear-gradient(90deg, #ff2200, #ff7700)";
-    } else if (sorteio < 0.66) {
-        Modificadores.eventoAtual = 'tempestade';
-        Modificadores.eventoTexto = "⚡ EVENTO: TEMPESTADE ELÉTRICA! (+25% Sorte Crítica!)";
-        el.painelEvento.style.background = "linear-gradient(90deg, #00b7ff, #aa00ff)";
-    } else {
-        Modificadores.eventoAtual = 'alinhamento';
-        Modificadores.eventoTexto = "🪐 EVENTO: ALINHAMENTO ESPIRITUAL! (Produção Passiva Triplicada!)";
-        el.painelEvento.style.background = "linear-gradient(90deg, #00ff66, #00b3ff)";
-    }
-    
-    tocarSom(700, 'sawtooth', 0.4);
-    atualizarTela();
-
-    setTimeout(() => {
-        Modificadores.eventoAtual = 'nenhum';
-        Modificadores.eventoTexto = "Universo em Calmaria";
-        atualizarTela();
-    }, 15000);
-}
-
+// --- CLIQUE MANUAL ---
 function dispararClique(e) {
     const base = calcularValorFinalClique();
     const eCrit = Math.random() < obterSorteCritica();
@@ -240,117 +187,147 @@ function dispararClique(e) {
         if (eCrit) p.style.color = "var(--accent)";
         const rect = clickArea.getBoundingClientRect();
         p.style.left = (e.clientX ? (e.clientX - rect.left) : (rect.width/2)) + "px";
-p.style.top = (e.clientY ? (e.clientY - rect.top) : (rect.height/2)) + "px";
-clickArea.appendChild(p); setTimeout(() => p.remove(), 600);
+        p.style.top = (e.clientY ? (e.clientY - rect.top) : (rect.height/2)) + "px";
+        clickArea.appendChild(p); setTimeout(() => p.remove(), 600);
+    }
+    atualizarTela();
+}
+
+// --- COMPRAS E REBIRTH INFINITO CORRIGIDO ---
+function comprarItem(id, inflacao) {
+    if (Game.aura >= Game.custos[id]) {
+        Game.aura -= Game.custos[id]; Game.upgrades[id]++;
+        Game.custos[id] = Math.round(Game.custos[id] * inflacao);
+        tocarSom(600, 'sine', 0.05); atualizarTela(); salvarJogo();
+    }
+}
+
+function comprarDivindade(id, preco) {
+    if (Game.fragmentos >= preco) {
+        Game.fragmentos -= preco; Game.divindade[id]++;
+        tocarSom(900, 'triangle', 0.15); atualizarTela(); salvarJogo();
+    }
+}
+
+function efetuarRebirth() {
+    if (Game.aura >= Game.custos.rebirth) {
+        // Concede 1 Fragmento fixo + bônus por auras extras acumuladas
+        Game.fragmentos += 1 + Math.floor(Game.aura / 2000);
+        Game.rebirths++;
+
+        // Resetar os Upgrades normais da rodada
+        Game.aura = 0;
+        Game.upgrades.u1 = 0;
+        Game.upgrades.u2 = 0;
+        Game.upgrades.u3 = 0;
+
+        // Resetar e escalar os custos inflacionados da loja
+        Game.custos.u1 = 15;
+        Game.custos.u2 = 60;
+        Game.custos.u3 = 400;
+
+        // Escalar o custo do Rebirth exponencialmente
+        Game.custos.rebirth = Math.round(Game.custos.rebirth * 3.5);
+
+        tocarSom(200, 'sawtooth', 0.5);
+        atualizarTela();
+        salvarJogo();
+    }
+}
+
+// --- CASSINO GACHA ANIMADO CÓSMICO PREMIUM ---
+function jogarCassino() {
+    if (Game.aura < 200 || roletaVisual.classList.contains("rodando")) return;
+    Game.aura -= 200;
+    atualizarTela();
+
+    // Inicia Animação e Som acelerado da Roleta
+    roletaVisual.classList.add("rodando");
+    el.btnRoleta.disabled = true;
+    el.resGacha.innerText = "🌀 Sintonizando fendas quânticas...";
+    el.resGacha.style.color = "var(--text-muted)";
+
+    let intervaloSom = setInterval(() => tocarSom(600, 'sine', 0.03), 100);
+
+    // Sorteia o resultado em background durante o giro de 1.5 segundos
+    setTimeout(() => {
+        clearInterval(intervaloSom);
+        roletaVisual.classList.remove("rodando");
+        el.btnRoleta.disabled = false;
+
+// CHANCES RECALIBRADAS (MUITO MAIS DIFÍCIL)
+// 65% Perder | 30% Ganhar 2x | 5% Jackpot 10x
+let sorteio = Math.random();
+if (sorteio < 0.65) { // PERDEU
+tocarSom(150, 'sawtooth', 0.3);
+el.resGacha.innerText = "❌ Colapso Quântico! Você perdeu as 200 Auras.";
+el.resGacha.style.color = "#ff4444";
+} else if (sorteio < 0.95) { // GANHO NORMAL
+Game.aura += 420;
+tocarSom(700, 'sine', 0.15);
+el.resGacha.innerText = "🎉 Vitória Estável! Ganhou +420 Auras.";
+el.resGacha.style.color = "#00ff66";
+} else { // JACKPOT RARO (5% CHANCE)
+Game.aura += 2500;
+tocarSom(1400, 'triangle', 0.6);
+el.resGacha.innerText = "💎 JACKPOT MUNDIAL! +2.500 AURAS CONCENTRADAS!";
+el.resGacha.style.color = "#ffaa00";
 }
 atualizarTela();
+salvarJogo();
+}, 1500);
+}
+// --- OUTROS MOTORES E SISTEMAS (DROPS/EVENTOS) ---
+function gerenciarSpawnPowerUp() {
+if (!powerupLayer) return;
+if (Math.random() < 0.5) {
+const drop = document.createElement("div"); drop.classList.add("powerup-drop");
+const tipoBuff = Math.random() < 0.5 ? 'clique' : 'passivo';
+if (tipoBuff === 'clique') { drop.innerText = "⚡ FRENESI (+2x Clique!)"; drop.style.background = "linear-gradient(135deg, #ff007f, #ffaa00)"; }
+else { drop.innerText = "🌀 TEMPORAL (+2x Passivo!)"; drop.style.background = "linear-gradient(135deg, #00ffff, #00ff66)"; }
+drop.style.left = Math.floor(Math.random() * (window.innerWidth - 250)) + "px";
+drop.style.top = Math.floor(Math.random() * (window.innerHeight - 150)) + "px";
+drop.addEventListener("click", () => { tocarSom(1000, 'sine', 0.3); drop.remove(); activarPowerUp(tipoBuff); });
+powerupLayer.appendChild(drop); setTimeout(() => { if(drop && drop.parentNode) drop.remove(); }, 8000);
+}
+}
+function activarPowerUp(tipo) {
+if (tipo === 'clique') { Modificadores.multiplicadorClique = 2; setTimeout(() => { Modificadores.multiplicadorClique = 1; atualizarTela(); }, 10000); }
+else { Modificadores.multiplicadorPassivo = 2; setTimeout(() => { Modificadores.multiplicadorPassivo = 1; atualizarTela(); }, 10000); }
+atualizarTela();
+}
+function gerenciarEventosAleatorios() {
+const sorteio = Math.random();
+if (sorteio < 0.33) { Modificadores.eventoAtual = 'supernova'; Modificadores.eventoTexto = "💥 SUPERNOVA! (Cliques em Dobro!)"; el.painelEvento.style.background = "linear-gradient(90deg, #ff2200, #ff7700)"; }
+else if (sorteio < 0.66) { Modificadores.eventoAtual = 'tempestade'; Modificadores.eventoTexto = "⚡ TEMPESTADE! (+25% Sorte Crítica!)"; el.painelEvento.style.background = "linear-gradient(90deg, #00b7ff, #aa00ff)"; }
+else { Modificadores.eventoAtual = 'alinhamento'; Modificadores.eventoTexto = "🪐 ALINHAMENTO! (Passivo Triplicado!)"; el.painelEvento.style.background = "linear-gradient(90deg, #00ff66, #00b3ff)"; }
+tocarSom(700, 'sawtooth', 0.4); atualizarTela();
+setTimeout(() => { Modificadores.eventoAtual = 'nenhum'; atualizarTela(); }, 15000);
 }
 function gerenciarSpawnCometa() {
 if (!cometaBonus || !cometaBonus.classList.contains("cometa-escondido")) return;
 if (Math.random() < 0.5) {
-cometaBonus.style.left = Math.floor(Math.random() * (window.innerWidth - 200)) + "px";
-cometaBonus.style.top = Math.floor(Math.random() * (window.innerHeight - 100)) + "px";
-cometaBonus.classList.remove("cometa-escondido");
+cometaBonus.style.left = Math.floor(Math.random() * (window.innerWidth - 200)) + "px"; cometaBonus.style.top = Math.floor(Math.random() * (window.innerHeight - 100)) + "px"; cometaBonus.classList.remove("cometa-escondido");
 setTimeout(() => { if(cometaBonus) cometaBonus.classList.add("cometa-escondido"); }, 5000);
 }
 }
 function coletarCometa() {
-cometaBonus.classList.add("cometa-escondido");
-tocarSom(1200, 'sine', 0.4);
-let recompensa = Math.max(calcularValorFinalClique() * 50, 1000);
-Game.aura += recompensa;
-el.resGacha.innerText = "☄️ Fenda Coletada! Concedeu +" + recompensa + " Auras!";
-atualizarTela();
+cometaBonus.classList.add("cometa-escondido"); tocarSom(1200, 'sine', 0.4);
+let recompensa = Math.max(calcularValorFinalClique() * 50, 1000); Game.aura += recompensa;
+el.resGacha.innerText = "☄️ Anomalia Capturada! Ganhou +" + recompensa + " Auras!"; atualizarTela();
 }
-function jogarCassino() {
-if (Game.aura < 200) return;
-Game.aura -= 200;
-tocarSom(300, 'sawtooth', 0.2);
-let sorteio = Math.random();
-if (sorteio < 0.4) {
-el.resGacha.innerText = "❌ Perdeu as 200 Auras na flutuação cósmica.";
-el.resGacha.style.color = "#ff4444";
-} else if (sorteio < 0.85) {
-Game.aura += 400;
-el.resGacha.innerText = "🎉 Ganhou! Recompensa dobrada (+400 Auras)";
-el.resGacha.style.color = "#00ff66";
-} else {
-Game.aura += 2000;
-tocarSom(1500, 'sine', 0.6);
-el.resGacha.innerText = "💎 JACKPOT INTERGALÁCTICO! (+2.000 AURAS!)";
-el.resGacha.style.color = "#ffaa00";
-}
-atualizarTela();
-}
-function abrirAba(nomeAba) {
-document.querySelectorAll('.conteudo-aba').forEach(a => a.classList.remove('ativa'));
-document.querySelectorAll('.aba-btn').forEach(b => b.classList.remove('ativa'));
-const abaAlvo = document.getElementById("aba-" + nomeAba);
-if (abaAlvo) abaAlvo.classList.add('ativa');
-}
-function mudarSkin(id) {
-document.body.className = "";
-if (id !== 'cyber') document.body.classList.add("theme-" + id);
-Game.skinAtiva = id;
-document.querySelectorAll('.skin-btn').forEach(b => b.classList.remove('ativo'));
-}
+function executarGanhoPassivo() { const p = calcularValorFinalPassivo(); if (p > 0) { Game.aura += p / 10; atualizarTela(); } }
+function abrirAba(nomeAba) { document.querySelectorAll('.conteudo-aba').forEach(a => a.classList.remove('ativa')); document.querySelectorAll('.aba-btn').forEach(b => b.classList.remove('ativa')); const alvo = document.getElementById("aba-" + nomeAba); if (alvo) alvo.classList.add('ativa'); }
+function mudarSkin(id) { document.body.className = ""; if (id !== 'cyber') document.body.classList.add("theme-" + id); Game.skinAtiva = id; document.querySelectorAll('.skin-btn').forEach(b => b.classList.remove('ativo')); }
 function configurarEventos() {
 document.getElementById("btn-farmar").addEventListener("click", dispararClique);
-cometaBonus.addEventListener("click", coletarCometa);
-el.btnRoleta.addEventListener("click", jogarCassino);
-el.u1.addEventListener("click", () => comprarItem('u1', 1.4));
-el.u2.addEventListener("click", () => comprarItem('u2', 1.5));
-el.u3.addEventListener("click", () => comprarItem('u3', 1.6));
-el.h1.addEventListener("click", () => comprarDivindade('h1', 1));
-el.h2.addEventListener("click", () => comprarDivindade('h2', 2));
-el.btnRebirth.addEventListener("click", efetuarRebirth);
-document.getElementById("btn-reset").addEventListener("click", resetTudo);
-document.querySelectorAll(".aba-btn").forEach(botao => {
-botao.addEventListener("click", (e) => {
-const abaAlvo = e.target.getAttribute("data-aba");
-abrirAba(abaAlvo);
-e.target.classList.add("ativa");
-});
-});
-document.querySelectorAll(".skin-btn").forEach(botao => {
-botao.addEventListener("click", (e) => {
-const skinAlvo = e.target.getAttribute("data-skin");
-mudarSkin(skinAlvo);
-e.target.classList.add("ativo");
-});
-});
+cometaBonus.addEventListener("click", coletarCometa); el.btnRoleta.addEventListener("click", jogarCassino);
+el.u1.addEventListener("click", () => comprarItem('u1', 1.4)); el.u2.addEventListener("click", () => comprarItem('u2', 1.5)); el.u3.addEventListener("click", () => comprarItem('u3', 1.6));
+el.h1.addEventListener("click", () => comprarDivindade('h1', 1)); el.h2.addEventListener("click", () => comprarDivindade('h2', 2));
+el.btnRebirth.addEventListener("click", efetuarRebirth); document.getElementById("btn-reset").addEventListener("click", resetTudo);
+document.querySelectorAll(".aba-btn").forEach(b => { b.addEventListener("click", (e) => { abrirAba(e.target.getAttribute("data-aba")); e.target.classList.add("ativa"); }); });
+document.querySelectorAll(".skin-btn").forEach(b => { b.addEventListener("click", (e) => { mudarSkin(e.target.getAttribute("data-skin")); e.target.classList.add("ativo"); }); });
 }
-function comprarItem(id, inflacao) {
-if (Game.aura >= Game.custos[id]) {
-Game.aura -= Game.custos[id]; Game.upgrades[id]++;
-Game.custos[id] = Math.round(Game.custos[id] * inflacao);
-tocarSom(600, 'sine', 0.05); atualizarTela(); salvarJogo();
-}
-}
-function comprarDivindade(id, preco) {
-if (Game.fragmentos >= preco) {
-Game.fragmentos -= preco; Game.divindade[id]++;
-tocarSom(900, 'triangle', 0.15); atualizarTela(); salvarJogo();
-}
-}
-function efetuarRebirth() {
-if (Game.aura >= Game.custos.rebirth) {
-Game.rebirths++;
-Game.fragmentos += Math.floor(Game.custos.rebirth / 1000);
-Game.aura = 0; Game.upgrades = { u1: 0, u2: 0, u3: 0 };
-Game.custos = { u1: 15, u2: 60, u3: 400, rebirth: Math.round(Game.custos.rebirth * 3.8) };
-tocarSom(200, 'sawtooth', 0.5); atualizarTela(); salvarJogo();
-}
-}
-function executarGanhoPassivo() {
-const p = calcularValorFinalPassivo();
-if (p > 0) { Game.aura += p / 10; atualizarTela(); }
-}
-function salvarJogo() { try { localStorage.setItem("auraGodSave_v5", JSON.stringify(Game)); } catch(e){} }
-function carregarJogo() {
-try {
-const s = localStorage.getItem("auraGodSave_v5");
-if (s) { Object.assign(Game, JSON.parse(s)); }
-} catch(e){}
-}
-function resetTudo() { if(confirm("Deletar todos os registros e saves?")) { localStorage.removeItem("auraGodSave_v5"); location.reload(); } }
+function salvarJogo() { try { localStorage.setItem("auraGodSave_v5.5", JSON.stringify(Game)); } catch(e){} }
+function carregarJogo() { try { const s = localStorage.getItem("auraGodSave_v5.5"); if (s) { Object.assign(Game, JSON.parse(s)); } } catch(e){} }
+function resetTudo() { if(confirm("Deletar todos os deuses e registros?")) { localStorage.removeItem("auraGodSave_v5.5"); location.reload(); } }
