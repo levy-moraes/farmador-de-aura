@@ -3,20 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aura Tycoon: God Mode</title>
+    <title>Aura Tycoon: Evolution God Mode</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="nebulosa-fundo"></div>
-    <div id="cometa-bonus" class="cometa-escondido">☄️ ANOMALIA QUANTICA! CLIQUE! ☄️</div>
+    <div id="cometa-bonus" class="cometa-escondido">☄️ ANOMALIA QUÂNTICA! CLIQUE! ☄️</div>
+
+    <!-- Camada para onde os cristais de Power-Up vão surgir -->
+    <div id="powerup-layer"></div>
 
     <div class="game-layout">
-        <!-- COLUNA ESQUERDA: EXIBIÇÃO E BOTÃO PRINCIPAL -->
+        <!-- COLUNA ESQUERDA: DISPLAY E CLIQUE -->
         <div class="panel-left">
             <div class="header-game">
-                <h1>🌌 Aura Tycoon</h1>
-                <span class="versao-tag">GOD MODE v4.0</span>
+                <h1>Aura Tycoon</h1>
+                <span class="versao-tag">EVOLUTION v5.0</span>
             </div>
+
+            <div id="painel-evento" class="banner-evento">Universo em Calmaria...</div>
 
             <div class="aura-display">
                 <div id="aura-contador">0</div>
@@ -25,9 +30,9 @@
                 
                 <div class="stats-grid">
                     <div>Clique Final: <span id="val-clique">+1</span></div>
-                    <div>Passivo FInal: <span id="val-passivo">+0/s</span></div>
+                    <div>Passivo Final: <span id="val-passivo">+0/s</span></div>
                     <div>Sorte Crítica: <span id="val-crit">10%</span></div>
-                    <div>Bônus Divino: <span id="val-bonus-god">1.0x</span></div>
+                    <div>Bônus Ativo: <span id="val-bonus-god">1.0x</span></div>
                 </div>
             </div>
 
@@ -37,21 +42,21 @@
 
             <div class="secao-titulo">🧬 Customização de Aura (Skin)</div>
             <div class="skin-selector">
-                <button class="skin-btn ativo" onclick="mudarSkin('cyber')">Cyber Ciano</button>
-                <button class="skin-btn" onclick="mudarSkin('inferno')">Inferno Neon</button>
-                <button class="skin-btn" onclick="mudarSkin('void')">Vazio Absoluto</button>
+                <button class="skin-btn ativo" onclick="mudarSkin('cyber', event)">Cyber Ciano</button>
+                <button class="skin-btn" onclick="mudarSkin('inferno', event)">Inferno Neon</button>
+                <button class="skin-btn" onclick="mudarSkin('void', event)">Vazio Absoluto</button>
             </div>
         </div>
 
-        <!-- COLUNA DIREITA: UPGRADES, ÁRVORE E CASSINO -->
+        <!-- COLUNA DIREITA: ABAS E UPGRADES -->
         <div class="panel-right">
             <div class="abas-navegacao">
-                <button class="aba-btn ativa" onclick="abrirAba('loja')">🛒 Mercado</button>
-                <button class="aba-btn" onclick="abrirAba('arvore')">✨ Divindade</button>
-                <button class="aba-btn" onclick="abrirAba('cassino')">🎲 Gacha</button>
+                <button class="aba-btn ativa" onclick="abrirAba('loja', event)">🛒 Mercado</button>
+                <button class="aba-btn" onclick="abrirAba('arvore', event)">✨ Divindade</button>
+                <button class="aba-btn" onclick="abrirAba('cassino', event)">🎲 Gacha</button>
             </div>
 
-            <!-- CONTEÚDO: LOJA -->
+            <!-- ABA MERCADO -->
             <div id="aba-loja" class="conteudo-aba ativa">
                 <div class="secao-titulo">🛒 Upgrades Padrão</div>
                 <div class="item-loja">
@@ -69,36 +74,38 @@
 
                 <div class="secao-titulo">🌌 Altar de Renascimento</div>
                 <div class="rebirth-card-container">
-                    <p class="info-efeito">Ganha +100% de bônus global e +1 Fragmento Divino por meta batida.</p>
+                    <p class="info-efeito">Ganha bônus global e +1 Fragmento Divino por meta.</p>
                     <div class="progress-bar-container"><div class="progress-bar-fill" id="barra-progresso-rebirth"></div></div>
                     <button class="btn-comprar btn-rebirth-premium" id="btn-rebirth">Meta: 1k</button>
                 </div>
             </div>
 
-            <!-- CONTEÚDO: ÁRVORE DE HABILIDADES DIVINAS -->
+            <!-- ABA DIVINDADE -->
             <div id="aba-arvore" class="conteudo-aba">
                 <div class="secao-titulo">✨ Transcendência Divina</div>
-                <p class="info-efeito" style="margin-bottom: 15px;">Use seus 🔮 Fragmentos Divinos obtidos em Rebirths de alto nível:</p>
+                <p class="info-efeito" style="margin-bottom: 15px;">Use seus 🔮 Fragmentos Divinos:</p>
                 
                 <div class="item-loja divindade">
                     <div class="item-info"><p class="info-nome">Olho das Galáxias (<span id="lvl-h1">0</span>)</p><p class="info-efeito">+5% Sorte Crítica Global</p></div>
                     <button class="btn-comprar btn-god" id="btn-h1">Custo: 1 🔮</button>
                 </div>
                 <div class="item-loja divindade">
-                    <div class="item-info"><p class="info-nome">Bênção Temporal (<span id="lvl-h2">0</span>)</p><p class="info-efeito">+25% de produção passiva geral</p></div>
+                    <div class="item-info"><p class="info-nome">Bênção Temporal (<span id="lvl-h2">0</span>)</p><p class="info-efeito">+25% passivo geral</p></div>
                     <button class="btn-comprar btn-god" id="btn-h2">Custo: 2 🔮</button>
                 </div>
             </div>
 
-            <!-- CONTEÚDO: GACHA CASSINO -->
+            <!-- ABA GACHA -->
             <div id="aba-cassino" class="conteudo-aba">
                 <div class="secao-titulo">🎲 Forja da Sorte Cósmica</div>
                 <div class="cassino-container">
-                    <p class="info-efeito">Gaste 200 Auras para girar a roleta dimensional. Você pode ganhar prêmios massivos ou perder tudo!</p>
+                    <p class="info-efeito">Gaste 200 Auras para girar. Recompensa gigante ou falência!</p>
                     <button class="btn-comprar btn-gacha" id="btn-roletar">Girar Roleta (200 Auras)</button>
                     <div id="gacha-resultado" class="resultado-box">Aguardando jogada...</div>
                 </div>
             </div>
+
+            <button class="btn-acao-perfil" id="btn-reset">Apagar Todos os Dados</button>
         </div>
     </div>
 
