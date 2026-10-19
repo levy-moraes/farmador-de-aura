@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aura Clicker Evolution</title>
+    <title>Aura Clicker Ultimate</title>
     <style>
-        /* Estilo Geral */
         body {
             background-color: #0b0b16;
             color: #ffffff;
@@ -19,7 +18,6 @@
             box-sizing: border-box;
         }
 
-        /* Container Principal */
         .game-container {
             display: flex;
             flex-direction: column;
@@ -39,7 +37,6 @@
             text-shadow: 0 0 10px rgba(188, 19, 254, 0.5);
         }
 
-        /* Seção do Contador */
         .status-section {
             background-color: #1c1c3a;
             padding: 15px;
@@ -58,9 +55,9 @@
             font-size: 0.9rem;
             color: #a0a0c0;
             margin-top: 5px;
+            line-height: 1.4;
         }
 
-        /* Botão Principal de Clique */
         #btn-farmar {
             background: linear-gradient(135deg, #8a2be2, #bc13fe);
             color: white;
@@ -74,15 +71,9 @@
             transition: transform 0.05s, filter 0.2s;
         }
 
-        #btn-farmar:hover {
-            filter: brightness(1.2);
-        }
+        #btn-farmar:hover { filter: brightness(1.2); }
+        #btn-farmar:active { transform: scale(0.96); }
 
-        #btn-farmar:active {
-            transform: scale(0.96);
-        }
-
-        /* Seção da Loja */
         .loja-container {
             text-align: left;
             margin-top: 10px;
@@ -96,7 +87,6 @@
             margin-bottom: 15px;
         }
 
-        /* Itens da Loja */
         .item-loja {
             display: flex;
             justify-content: space-between;
@@ -106,21 +96,23 @@
             border-radius: 10px;
             margin-bottom: 10px;
             border: 1px solid #2d2d5a;
+            transition: all 0.3s ease;
         }
 
-        .item-info p {
-            margin: 0;
+        .secao-rebirth {
+            background-color: #25133a !important;
+            border: 1px solid #bc13fe !important;
         }
 
-        .item-nome {
-            font-weight: bold;
-            color: #ffffff;
+        .item-bloqueado {
+            background-color: #101020 !important;
+            border: 1px dashed #444466 !important;
+            opacity: 0.6;
         }
 
-        .item-efeito {
-            font-size: 0.85rem;
-            color: #a0a0c0;
-        }
+        .item-info p { margin: 0; }
+        .item-nome { font-weight: bold; color: #ffffff; }
+        .item-efeito { font-size: 0.85rem; color: #a0a0c0; }
 
         .btn-comprar {
             background-color: #00b3b3;
@@ -130,154 +122,316 @@
             font-weight: bold;
             border-radius: 6px;
             cursor: pointer;
-            transition: background-color 0.2s, opacity 0.2s;
+            transition: background-color 0.2s;
         }
 
-        .btn-comprar:hover {
-            background-color: #00ffff;
-        }
+        .btn-comprar:hover { background-color: #00ffff; }
+        .btn-rebirth { background-color: #bc13fe; color: white; }
+        .btn-rebirth:hover { background-color: #df46ff; }
 
-        /* Estilo para quando o jogador não tem aura suficiente */
         .btn-comprar:disabled {
             background-color: #33334c;
             color: #777799;
             cursor: not-allowed;
+        }
+
+        /* Botão extra para resetar save manualmente se quiser */
+        #btn-resetar-tudo {
+            background: transparent;
+            color: #ff4444;
+            border: 1px solid #ff4444;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            margin-top: 15px;
+            width: 100%;
+        }
+        #btn-resetar-tudo:hover {
+            background: #ff4444;
+            color: #000;
         }
     </style>
 </head>
 <body>
 
     <div class="game-container">
-        <h1>✨ Aura Clicker Evolution ✨</h1>
+        <h1>✨ Aura Clicker Ultimate ✨</h1>
         
         <div class="status-section">
             <span id="aura-contador">0</span>
             <div class="stats-secundarios">
-                Aura por Clique: +<span id="txt-por-clique">1</span> | 
-                Aura por Segundo: +<span id="txt-por-segundo">0</span>
+                Aura por Clique: +<span id="txt-por-clique">1</span><br>
+                Aura por Segundo: +<span id="txt-por-segundo">0</span><br>
+                Multiplicador Global: <span id="txt-multiplicador">1.0</span>x
             </div>
         </div>
         
-        <!-- Botão de Farm Principal -->
         <button id="btn-farmar">CONCENTRAR AURA</button>
 
-        <!-- Seção da Loja -->
         <div class="loja-container">
+            <div class="loja-titulo">🌌 Altar de Renascimento</div>
+            
+            <div class="item-loja secao-rebirth">
+                <div class="item-info">
+                    <p class="item-nome">Ascensão Cósmica (Rebirths: <span id="lvl-rebirth">0</span>)</p>
+                    <p class="item-efeito">Reseta o progresso por +100% de bônus global e novos itens!</p>
+                </div>
+                <button class="btn-comprar btn-rebirth" id="btn-comprar-rebirth">Meta: 1000</button>
+            </div>
+
             <div class="loja-titulo">🛒 Loja de Upgrades</div>
             
-            <!-- Upgrade 1: Multiplicador de Clique -->
-            <div class="item-loja">
+            <!-- Tier 1 -->
+            <div class="item-loja" id="container-u1">
                 <div class="item-info">
                     <p class="item-nome">Foco Espiritual (<span id="lvl-upgrade-clique">0</span>)</p>
-                    <p class="item-efeito">+1 Aura por clique</p>
+                    <p class="item-efeito">+1 base por clique</p>
                 </div>
                 <button class="btn-comprar" id="btn-upgrade-clique">Custo: 15</button>
             </div>
 
-            <!-- Upgrade 2: Gerador Automático -->
-            <div class="item-loja">
+            <div class="item-loja" id="container-u2">
                 <div class="item-info">
                     <p class="item-nome">Meditação Passiva (<span id="lvl-auto-click">0</span>)</p>
-                    <p class="item-efeito">+2 Aura por segundo</p>
+                    <p class="item-efeito">+2 base por segundo</p>
                 </div>
                 <button class="btn-comprar" id="btn-auto-click">Custo: 50</button>
             </div>
+
+            <!-- Tier 2 (Rebirth 1+) -->
+            <div class="item-loja item-bloqueado" id="container-u3">
+                <div class="item-info">
+                    <p class="item-nome" id="nome-u3">🔒 Bloqueado (Rebirth 1)</p>
+                    <p class="item-efeito" id="efeito-u3">Requer 1 Rebirth para revelar</p>
+                </div>
+                <button class="btn-comprar" id="btn-alquimia" disabled>Custo: 500</button>
+            </div>
+
+            <!-- Tier 3 (Rebirth 3+) -->
+            <div class="item-loja item-bloqueado" id="container-u4">
+                <div class="item-info">
+                    <p class="item-nome" id="nome-u4">🔒 Bloqueado (Rebirth 3)</p>
+                    <p class="item-efeito" id="efeito-u4">Requer 3 Rebirths para revelar</p>
+                </div>
+                <button class="btn-comprar" id="btn-divino" disabled>Custo: 5000</button>
+            </div>
         </div>
+
+        <button id="btn-resetar-tudo">Limpar Save (Recomeçar do Zero)</button>
     </div>
 
     <script>
-        // --- 1. ESTADO DO JOGO (VARIÁVEIS) ---
+        // --- VARIÁVEIS DE ESTADO ---
         let aura = 0;
-        let auraPorClique = 1;
-        let auraPorSegundo = 0;
+        let rebirths = 0;
 
-        // Preços iniciais dos upgrades
+        let baseAuraPorClique = 1;
+        let baseAuraPorSegundo = 0;
+
         let custoUpgradeClique = 15;
         let custoAutoClick = 50;
+        let custoAlquimia = 500;
+        let custoDivino = 5000;
+        let custoRebirth = 1000;
 
-        // Níveis dos upgrades
         let lvlUpgradeClique = 0;
         let lvlAutoClick = 0;
+        let lvlAlquimia = 0;
+        let lvlDivino = 0;
 
-        // --- 2. MAPEAMENTO DOS ELEMENTOS DO HTML ---
+        // --- MAPEAMENTO HTML ---
         const txtAura = document.getElementById("aura-contador");
         const txtPorClique = document.getElementById("txt-por-clique");
         const txtPorSegundo = document.getElementById("txt-por-segundo");
+        const txtMultiplicador = document.getElementById("txt-multiplicador");
         const btnFarmar = document.getElementById("btn-farmar");
 
         const btnUpgradeClique = document.getElementById("btn-upgrade-clique");
         const btnAutoClick = document.getElementById("btn-auto-click");
+        const btnAlquimia = document.getElementById("btn-alquimia");
+        const btnDivino = document.getElementById("btn-divino");
+        const btnComprarRebirth = document.getElementById("btn-comprar-rebirth");
 
         const txtLvlClique = document.getElementById("lvl-upgrade-clique");
         const txtLvlAuto = document.getElementById("lvl-auto-click");
+        const txtLvlRebirth = document.getElementById("lvl-rebirth");
 
-        // --- 3. FUNÇÕES DE ATUALIZAÇÃO ---
+        const containerU3 = document.getElementById("container-u3");
+        const nomeU3 = document.getElementById("nome-u3");
+        const efeitoU3 = document.getElementById("efeito-u3");
+
+        const containerU4 = document.getElementById("container-u4");
+        const nomeU4 = document.getElementById("nome-u4");
+        const efeitoU4 = document.getElementById("efeito-u4");
         
-        // Atualiza todos os textos e desabilita botões se faltar dinheiro
-        function atualizarInterface() {
-            txtAura.innerText = Math.floor(aura);
-            txtPorClique.innerText = auraPorClique;
-            txtPorSegundo.innerText = auraPorSegundo;
+        const btnResetarTudo = document.getElementById("btn-resetar-tudo");
 
-            // Atualiza os textos dos botões da loja
-            btnUpgradeClique.innerText = "Custo: " + custoUpgradeClique;
-            btnAutoClick.innerText = "Custo: " + custoAutoClick;
-
-            // Mostra os níveis atuais
-            txtLvlClique.innerText = lvlUpgradeClique;
-            txtLvlAuto.innerText = lvlAutoClick;
-
-            // Validação de botões: Bloqueia se o jogador não puder pagar
-            btnUpgradeClique.disabled = (aura < custoUpgradeClique);
-            btnAutoClick.disabled = (aura < custoAutoClick);
-        }
-
-        // --- 4. SISTEMA DE CLIQUE ---
-        btnFarmar.addEventListener("click", () => {
-            aura += auraPorClique;
+        // --- SISTEMA DE SALVAMENTO (LOCALSTORAGE) ---
+        document.addEventListener("DOMContentLoaded", () => {
+            carregarProgresso();
             atualizarInterface();
         });
 
-        // --- 5. LOGICA DA LOJA (COMPRAS) ---
+        function salvarProgresso() {
+            const saveGame = {
+                aura, rebirths, baseAuraPorClique, baseAuraPorSegundo,
+                custoUpgradeClique, custoAutoClick, custoAlquimia, custoDivino, custoRebirth,
+                lvlUpgradeClique, lvlAutoClick, lvlAlquimia, lvlDivino
+            };
+            localStorage.setItem("auraClickerSave", JSON.stringify(saveGame));
+        }
 
-        // Comprar multiplicador de clique (+1 por clique)
-        btnUpgradeClique.addEventListener("click", () => {
-            if (aura >= custoUpgradeClique) {
-                aura -= custoUpgradeClique; // Gasta a aura
-                auraPorClique += 1;          // Aumenta o poder do clique
-                lvlUpgradeClique += 1;       // Aumenta o nível exibido
-                
-                // Aumenta o preço do próximo upgrade em 50% (inflação)
-                custoUpgradeClique = Math.round(custoUpgradeClique * 1.5); 
-                
-                atualizarInterface();
-            }
-        });
+        function carregarProgresso() {
+            const saveObtido = localStorage.getItem("auraClickerSave");
 
-        // Comprar gerador automático (+2 aura por segundo)
-        btnAutoClick.addEventListener("click", () => {
-            if (aura >= custoAutoClick) {
-                aura -= custoAutoClick;
-                auraPorSegundo += 2;
-                lvlAutoClick += 1;
-
-                // Aumenta o preço do próximo gerador automático em 60%
-                custoAutoClick = Math.round(custoAutoClick * 1.6);
-
-                atualizarInterface();
-            }
-        });
-
-        // --- 6. LOOP DO AUTO-CLICKER (EXECUTA A CADA 1 SEGUNDO) ---
-        setInterval(() => {
-            if (auraPorSegundo > 0) {
-                aura += auraPorSegundo;
-                atualizarInterface();
-            }
-        }, 1000); // 1000 milissegundos = 1 segundo
-
-        // Inicializa a tela com os valores corretos ao abrir o jogo
-        atualizarInterface();
-    </script>
-</body>
-</html>
+            if (saveObtido) {
+const dados = JSON.parse(saveObtido);
+aura = dados.aura ?? 0;
+rebirths = dados.rebirths ?? 0;
+baseAuraPorClique = dados.baseAuraPorClique ?? 1;
+baseAuraPorSegundo = dados.baseAuraPorSegundo ?? 0;
+custoUpgradeClique = dados.custoUpgradeClique ?? 15;
+custoAutoClick = dados.custoAutoClick ?? 50;
+custoAlquimia = dados.custoAlquimia ?? 500;
+custoDivino = dados.custoDivino ?? 5000;
+custoRebirth = dados.custoRebirth ?? 1000;
+lvlUpgradeClique = dados.lvlUpgradeClique ?? 0;
+lvlAutoClick = dados.lvlAutoClick ?? 0;
+lvlAlquimia = dados.lvlAlquimia ?? 0;
+lvlDivino = dados.lvlDivino ?? 0;
+}
+}
+// --- LÓGICA DE PODER ---
+function obtenerMultiplicador() { return 1 + rebirths; }
+function obtenerGanhoPorClique() { return baseAuraPorClique * obtenerMultiplicador(); }
+function obtenerGanhoPorSegundo() { return baseAuraPorSegundo * obtenerMultiplicador(); }
+// --- GERENCIADOR DOS BLOQUEIOS DA LOJA ---
+function gerenciarDesbloqueiosLoja() {
+if (rebirths >= 1) {
+containerU3.classList.remove("item-bloqueado");
+nomeU3.innerHTML = `Alquimia de Aura (<span id="lvl-alquimia">${lvlAlquimia}</span>)`;
+efeitoU3.innerText = "+25 base por clique";
+btnAlquimia.disabled = (aura < custoAlquimia);
+} else {
+containerU3.classList.add("item-bloqueado");
+btnAlquimia.disabled = true;
+}
+if (rebirths >= 3) {
+containerU4.classList.remove("item-bloqueado");
+nomeU4.innerHTML = `Aura Divina (<span id="lvl-divino">${lvlDivino}</span>)`;
+efeitoU4.innerText = "+150 base por segundo";
+btnDivino.disabled = (aura < custoDivino);
+} else {
+containerU4.classList.add("item-bloqueado");
+btnDivino.disabled = true;
+}
+}
+// --- ATUALIZAÇÃO GLOBAL DA INTERFACE ---
+function atualizarInterface() {
+txtAura.innerText = Math.floor(aura);
+txtPorClique.innerText = obtenerGanhoPorClique();
+txtPorSegundo.innerText = obtenerGanhoPorSegundo().toFixed(0);
+txtMultiplicador.innerText = obtenerMultiplicador().toFixed(1);
+btnUpgradeClique.innerText = "Custo: " + custoUpgradeClique;
+btnAutoClick.innerText = "Custo: " + custoAutoClick;
+btnAlquimia.innerText = "Custo: " + custoAlquimia;
+btnDivino.innerText = "Custo: " + custoDivino;
+btnComprarRebirth.innerText = "Meta: " + custoRebirth;
+txtLvlClique.innerText = lvlUpgradeClique;
+txtLvlAuto.innerText = lvlAutoClick;
+txtLvlRebirth.innerText = rebirths;
+gerenciarDesbloqueiosLoja();
+btnUpgradeClique.disabled = (aura < custoUpgradeClique);
+btnAutoClick.disabled = (aura < custoAutoClick);
+btnComprarRebirth.disabled = (aura < custoRebirth);
+}
+// --- CLIQUES ---
+btnFarmar.addEventListener("click", () => {
+aura += obtenerGanhoPorClique();
+atualizarInterface();
+salvarProgresso();
+});
+// --- COMPRAS DA LOJA ---
+btnUpgradeClique.addEventListener("click", () => {
+if (aura >= custoUpgradeClique) {
+aura -= custoUpgradeClique;
+baseAuraPorClique += 1;
+lvlUpgradeClique += 1;
+custoUpgradeClique = Math.round(custoUpgradeClique * 1.5);
+atualizarInterface();
+salvarProgresso();
+}
+});
+btnAutoClick.addEventListener("click", () => {
+if (aura >= custoAutoClick) {
+aura -= custoAutoClick;
+baseAuraPorSegundo += 2;
+lvlAutoClick += 1;
+custoAutoClick = Math.round(custoAutoClick * 1.6);
+atualizarInterface();
+salvarProgresso();
+}
+});
+btnAlquimia.addEventListener("click", () => {
+if (rebirths >= 1 && aura >= custoAlquimia) {
+aura -= custoAlquimia;
+baseAuraPorClique += 25;
+lvlAlquimia += 1;
+custoAlquimia = Math.round(custoAlquimia * 1.7);
+atualizarInterface();
+salvarProgresso();
+}
+});
+btnDivino.addEventListener("click", () => {
+if (rebirths >= 3 && aura >= custoDivino) {
+aura -= custoDivino;
+baseAuraPorSegundo += 150;
+lvlDivino += 1;
+custoDivino = Math.round(custoDivino * 1.8);
+atualizarInterface();
+salvarProgresso();
+}
+});
+// --- EXECUÇÃO DO REBIRTH ---
+btnComprarRebirth.addEventListener("click", () => {
+if (aura >= custoRebirth) {
+rebirths += 1;
+// Reset de status comuns
+aura = 0;
+baseAuraPorClique = 1;
+baseAuraPorSegundo = 0;
+custoUpgradeClique = 15;
+custoAutoClick = 50;
+custoAlquimia = 500;
+custoDivino = 5000;
+lvlUpgradeClique = 0;
+lvlAutoClick = 0;
+lvlAlquimia = 0;
+lvlDivino = 0;
+custoRebirth = Math.round(custoRebirth * 2.8);
+atualizarInterface();
+salvarProgresso();
+}
+});
+// --- SISTEMA AUTO-RESET DE SAVE MANUAL ---
+btnResetarTudo.addEventListener("click", () => {
+if (confirm("Tem certeza de que quer deletar todo o seu progresso permanentemente?")) {
+localStorage.removeItem("auraClickerSave");
+location.reload();
+}
+});
+// --- LOOP DO AUTOMÁTICO (E SALVAMENTO A CADA 5 SEGUNDOS) ---
+let ticksParaSalvar = 0;
+setInterval(() => {
+if (obtenerGanhoPorSegundo() > 0) {
+aura += obtenerGanhoPorSegundo() / 10;
+}
+atualizarInterface();
+// Salva de forma silenciosa e automática a cada 5 segundos (50 ticks de 100ms)
+ticksParaSalvar++;
+if (ticksParaSalvar >= 50) {
+salvarProgresso();
+ticksParaSalvar = 0;
+}
+}, 100);
