@@ -3,119 +3,161 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aura Tycoon: God Mode Evolution</title>
+    <title>Aura Clicker ✨</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="nebulosa-fundo"></div>
-    <div id="cometa-bonus" class="cometa-escondido">☄️ ANOMALIA QUÂNTICA! CLIQUE! ☄️</div>
-    <div id="powerup-layer"></div>
 
-    <div class="game-layout">
-        <!-- COLUNA ESQUERDA: DISPLAY E CLIQUE -->
-        <div class="panel-left">
-            <div class="header-game">
-                <h1>Aura Tycoon</h1>
-                <span class="versao-tag">GOD MODE v5.5</span>
-            </div>
-
-            <div id="painel-evento" class="banner-evento">Universo em Calmaria...</div>
-
-            <div class="aura-display">
-                <div id="aura-contador">0</div>
-                <div class="aura-raridade" id="txt-raridade">Aura Primordial</div>
-                <div class="moeda-secundaria">🔮 Fragmentos Divinos: <span id="txt-fragmentos">0</span></div>
-                
-                <div class="stats-grid">
-                    <div>Clique Final: <span id="val-clique">+1</span></div>
-                    <div>Passivo Final: <span id="val-passivo">+0/s</span></div>
-                    <div>Sorte Crítica: <span id="val-crit">10%</span></div>
-                    <div>Bônus Ativo: <span id="val-bonus-god">1.0x</span></div>
-                </div>
-            </div>
-
-            <div class="click-area" id="area-de-clique">
-                <button id="btn-farmar">Concentrar Poder Divino</button>
-            </div>
-
-            <div class="secao-titulo">🧬 Customização de Aura (Skin)</div>
-            <div class="skin-selector">
-                <button class="skin-btn ativo" data-skin="cyber">Cyber Ciano</button>
-                <button class="skin-btn" data-skin="inferno">Inferno Neon</button>
-                <button class="skin-btn" data-skin="void">Vazio Absoluto</button>
-            </div>
+    <div class="game-container">
+        <!-- SEÇÃO PRINCIPAL DO CLICKER -->
+        <div class="clicker-section">
+            <h1>Aura Clicker</h1>
+            <div class="rank-badge" id="rankDisplay">Rank: Desperto</div>
+            <div class="counter" id="auraDisplay">0 Aura</div>
+            <div class="per-second" id="apsDisplay">Aura por seg: 0</div>
+            
+            <!-- Orbe de Energia Ativa -->
+            <button class="aura-btn" id="clickBtn">
+                <div class="aura-core"></div>
+            </button>
         </div>
 
-        <!-- COLUNA DIREITA: ABAS E PROGRESSÃO -->
-        <div class="panel-right">
-            <div class="abas-navegacao">
-                <button class="aba-btn ativa" data-aba="loja">🛒 Mercado</button>
-                <button class="aba-btn" data-aba="arvore">✨ Divindade</button>
-                <button class="aba-btn" data-aba="cassino">🎲 Gacha</button>
+        <!-- SEÇÃO DE MELHORIAS (LOJA E SISTEMAS) -->
+        <div class="shop-section">
+            <!-- Sistema de Abas Alternáveis -->
+            <div class="tabs-container">
+                <button class="tab-btn active" id="tabNormal">Canalizadores</button>
+                <button class="tab-btn" id="tabRoulette">🎡 Roleta</button>
+                <button class="tab-btn secret-tab" id="tabSecret" style="display: none;">🎭 Loja Secreta</button>
             </div>
 
-            <!-- ABA MERCADO -->
-            <div id="aba-loja" class="conteudo-aba ativa">
-                <div class="secao-titulo">🛒 Upgrades Padrão</div>
-                <div class="item-loja">
-                    <div class="item-info"><p class="info-nome">Foco Mental (<span id="lvl-u1">0</span>)</p><p class="info-efeito">+1 por clique</p></div>
-                    <button class="btn-comprar" id="btn-u1">Custo: 15</button>
-                </div>
-                <div class="item-loja">
-                    <div class="item-info"><p class="info-nome">Núcleo de Meditação (<span id="lvl-u2">0</span>)</p><p class="info-efeito">+2/s passivo</p></div>
-                    <button class="btn-comprar" id="btn-u2">Custo: 60</button>
-                </div>
-                <div class="item-loja" id="box-u3">
-                    <div class="item-info"><p class="info-nome">Sintonia Astral (<span id="lvl-u3">0</span>)</p><p class="info-efeito" id="efeito-u3">🔒 Requer Rebirth 1</p></div>
-                    <button class="btn-comprar" id="btn-u3" disabled>Custo: 400</button>
-                </div>
-
-                <div class="secao-titulo">🌌 Altar de Renascimento</div>
-                <div class="rebirth-card-container">
-                    <p class="info-efeito">Reseta os Upgrades comuns por +100% de bônus global e +1 Fragmento Divino.</p>
-                    <div class="progress-bar-container"><div class="progress-bar-fill" id="barra-progresso-rebirth"></div></div>
-                    <button class="btn-comprar btn-rebirth-premium" id="btn-rebirth">Meta: 1k</button>
-                </div>
-            </div>
-
-            <!-- ABA DIVINDADE -->
-            <div id="aba-arvore" class="conteudo-aba">
-                <div class="secao-titulo">✨ Transcendência Divina</div>
-                <p class="info-efeito" style="margin-bottom: 15px;">Estes bônus são permanentes e não resetam no Rebirth:</p>
+            <!-- CONTEÚDO DA LOJA NORMAL -->
+            <div id="shopNormalContent" class="shop-content active">
+                <h2 class="shop-title">Canalizadores de Aura</h2>
                 
-                <div class="item-loja divindade">
-                    <div class="item-info"><p class="info-nome">Olho das Galáxias (<span id="lvl-h1">0</span>)</p><p class="info-efeito">+5% Sorte Crítica Global</p></div>
-                    <button class="btn-comprar btn-god" id="btn-h1">Custo: 1 🔮</button>
-                </div>
-                <div class="item-loja divindade">
-                    <div class="item-info"><p class="info-nome">Bênção Temporal (<span id="lvl-h2">0</span>)</p><p class="info-efeito">+25% passivo geral</p></div>
-                    <button class="btn-comprar btn-god" id="btn-h2">Custo: 2 🔮</button>
-                </div>
-            </div>
-
-            <!-- ABA GACHA CINEMÁTICO -->
-            <div id="aba-cassino" class="conteudo-aba">
-                <div class="secao-titulo">🎲 Forja da Sorte Cósmica</div>
-                <div class="cassino-container">
-                    <p class="info-efeito">Taxa de Vitória Reduzida. Gaste 200 Auras por uma tentativa.</p>
-                    
-                    <!-- Elemento Visual da Roleta Roletando -->
-                    <div class="roleta-wrapper">
-                        <div class="roleta-disco" id="roleta-visual">
-                            <div class="roleta-setor color-1"></div>
-                            <div class="roleta-setor color-2"></div>
-                            <div class="roleta-setor color-3"></div>
-                            <div class="roleta-setor color-4"></div>
-                        </div>
-                        <div class="roleta-ponteiro">▼</div>
+                <button class="upgrade-btn" id="upClick">
+                    <div class="upgrade-info">
+                        <span class="name">Foco Mental 🧠</span>
+                        <span class="effect" id="clickEffect">Ganha +1 por clique (Nível 1)</span>
                     </div>
+                    <div class="price" id="clickPrice">15 Aura</div>
+                </button>
 
-                    <button class="btn-comprar btn-gacha" id="btn-roletar">Girar Roleta (200 Auras)</button>
-                    <div id="gacha-resultado" class="resultado-box">Aguardando jogada...</div>
+                <button class="upgrade-btn" id="upAuto1">
+                    <div class="upgrade-info">
+                        <span class="name">Meditação Passiva 🧘</span>
+                        <span class="effect" id="auto1Effect">+1 Aura/seg (0 possuídos)</span>
+                    </div>
+                    <div class="price" id="auto1Price">100 Aura</div>
+                </button>
+
+                <button class="upgrade-btn" id="upAuto2">
+                    <div class="upgrade-info">
+                        <span class="name">Cristal de Energia 🔮</span>
+                        <span class="effect" id="auto2Effect">+8 Aura/seg (0 possuídos)</span>
+                    </div>
+                    <div class="price" id="auto2Price">1,100 Aura</div>
+                </button>
+
+                <button class="upgrade-btn" id="upAuto3">
+                    <div class="upgrade-info">
+                        <span class="name">Alinhamento Cósmico 🌌</span>
+                        <span class="effect" id="auto3Effect">+60 Aura/seg (0 possuídos)</span>
+                    </div>
+                    <div class="price" id="auto3Price">12,000 Aura</div>
+                </button>
+
+                <button class="upgrade-btn" id="upAuto4">
+                    <div class="upgrade-info">
+                        <span class="name">Fenda Dimensional 🌀</span>
+                        <span class="effect" id="auto4Effect">+450 Aura/seg (0 possuídos)</span>
+                    </div>
+                    <div class="price" id="auto4Price">130,000 Aura</div>
+                </button>
+
+                <!-- Sistema de Prestígio (Ascensão) -->
+                <div class="rebirth-container">
+                    <button class="rebirth-btn" id="rebirthBtn" disabled>
+                        Transcender (Ascensão) <br>
+                        <span style="font-size: 0.8rem; font-weight: normal;" id="rebirthReq">Requer 1,000,000 Aura</span>
+                    </button>
+                    <div style="font-size: 0.85rem; color: #a076ff; text-align: center; margin-top: 8px;" id="rebirthDisplay">Almas Divinas: 0 (+0% bônus global)</div>
                 </div>
             </div>
 
-            <button class="btn-acao-perfil" id="btn-reset">Apagar Todos os Dados</button>
+            <!-- CONTEÚDO DA ROLETA DA SORTE -->
+            <div id="shopRouletteContent" class="shop-content">
+                <h2 class="shop-title" style="color: #00ffcc; border-color: rgba(0, 255, 204, 0.3);">Roleta Cósmica</h2>
+                <p class="secret-subtitle">"Arrisque sua energia para mudar seu destino..."</p>
+                
+                <div class="roulette-container">
+                    <div class="wheel-wrapper">
+                        <div class="needle"></div>
+                        <div class="wheel" id="wheel">
+                            <div class="wheel-text" id="wheelText">✨</div>
+                        </div>
+                    </div>
+                    
+                    <div class="roulette-controls">
+                        <button class="roulette-btn" id="spinPaidBtn" style="background: linear-gradient(90deg, #ffcd3c, #ff9900);">
+                            Girar Roleta <br>
+                            <span id="paidCostText" style="font-size:0.8rem; font-weight:normal;">Custo: 500 Aura</span>
+                        </button>
+                    </div>
+                    <div class="roulette-result" id="rouletteResult">Clique acima para tentar a sorte!</div>
+                </div>
+            </div>
+
+            <!-- CONTEÚDO DA LOJA SECRETA (SR. MISTERIOSO) -->
+            <div id="shopSecretContent" class="shop-content">
+                <h2 class="shop-title" style="color: #ff0055; border-color: rgba(255, 0, 85, 0.3);">Mercado Negro do Sr. Misterioso</h2>
+                <p class="secret-subtitle">"Mercadorias raras para espíritos ambiciosos... por um preço justo."</p>
+
+                <button class="upgrade-btn secret-item" id="upSecret1">
+                    <div class="upgrade-info">
+                        <span class="name" style="color: #ff0055;">Contrato Sombrio 📜</span>
+                        <span class="effect" id="secret1Effect">Aumenta o multiplicador de cliques em +500% (0 comprados)</span>
+                    </div>
+                    <div class="price" style="color: #ff3366;" id="secret1Price">75,000 Aura</div>
+                </button>
+
+                <button class="upgrade-btn secret-item" id="upSecret2">
+                    <div class="upgrade-info">
+                        <span class="name" style="color: #ff0055;">Olho do Vazio 👁️‍🗨️</span>
+                        <span class="effect" id="secret2Effect">Ganha +5.000 Aura/seg passivamente (0 comprados)</span>
+                    </div>
+                    <div class="price" style="color: #ff3366;" id="secret2Price">500,000 Aura</div>
+                </button>
+
+                <button class="upgrade-btn secret-item" id="upSecret3">
+                    <div class="upgrade-info">
+                        <span class="name" style="color: #ff0055;">Coração de Estrela Escura 🖤</span>
+                        <span class="effect" id="secret3Effect">Dobra permanentemente toda a sua Aura por segundo atual (0 comprados)</span>
+                    </div>
+                    <div class="price" style="color: #ff3366;" id="secret3Price">4,000,000 Aura</div>
+                </button>
+
+                <!-- ÁREA DO CÓDIGO DE ADMINISTRADOR -->
+                <div class="admin-auth-box">
+                    <h3 class="admin-title">🔒 Terminal Restrito</h3>
+                    <div class="admin-input-group">
+                        <input type="text" id="adminCodeInput" placeholder="Insira a chave mestra...">
+                        <button id="adminAuthBtn">Acessar</button>
+                    </div>
+                </div>
+
+                <!-- PAINEL DE CHEATS ADM (INICIALMENTE ESCONDIDO) -->
+                <div class="admin-panel" id="adminPanel" style="display: none;">
+                    <h3 class="admin-panel-title">🛠️ Painel do Desenvolvedor ADM</h3>
+                    <div class="admin-grid">
+                        <button class="admin-btn toggle" id="btnInfAura">Aura Infinita: DESATIVADO</button>
+                        <button class="admin-btn" id="btnGiveMillion">+1.000.000 Aura</button>
+                        <button class="admin-btn toggle" id="btnMegaMultiplier">Multiplicador x999: DESATIVADO</button>
+                        <button class="admin-btn danger" id="btnClearSave">Zerar Jogo</button>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 
